@@ -27,13 +27,14 @@ class Devmenu extends Base
     public function __construct()
     {
         parent::__construct();
-
+        $this->tpl                    = new \xnrcms\DevTpl();
         $this->apiUrl['index']        = 'Admin/Devmenu/listData';
         $this->apiUrl['edit']         = 'Admin/Devmenu/detailData';
         $this->apiUrl['add_save']     = 'Admin/Devmenu/saveData';
         $this->apiUrl['edit_save']    = 'Admin/Devmenu/saveData';
         $this->apiUrl['quickedit']    = 'Admin/Devmenu/quickEditData';
         $this->apiUrl['del']          = 'Admin/Devmenu/delData';
+        $this->apiUrl['release']      = 'Admin/Devmenu/releaseData';
     }
 
 	/**
@@ -42,8 +43,27 @@ class Devmenu extends Base
 	 */
 	public function index()
 	{
+		//参数数据接收
+        $param      = request()->param();
+
+        //初始化模板
+        $tag        = ''; //默认当前路由为唯一标识，自己可以自定义标识
+        $tpl_title  = '菜单列表'; //初始化列表模板的名称，为空时不初始化
+        $tplid      = $this->tpl->initTplData(get_devtpl_tag($tag),$tpl_title,0);
+        $listNode   = $this->tpl->showTpl($tplid);
+        $listId     = isset($listNode['info']['id']) ? intval($listNode['info']['id']) : 0;
+
+        //参数定义
+        $menuid     = isset($param['menuid']) ? $param['menuid'] : 0;
+        $page       = isset($param['page']) ? $param['page'] : 1;
+        $search     = isset($param['search']) ? $param['search'] : [];
+        $isTree     = 1;
+
+        //页面操作功能菜单
+        $topMenu    = formatMenuByPidAndPos($menuid,2, $this->menu);
+        $rightMenu  = formatMenuByPidAndPos($menuid,3, $this->menu);
+
 		//获取列表数据
-		$search 			= [];
         $parame['uid']      = $this->uid;
         $parame['hashid']   = $this->hashid;
         $parame['page']     = input('page',1);
@@ -53,9 +73,32 @@ class Devmenu extends Base
         if (!isset($this->apiUrl[request()->action()]) || empty($this->apiUrl[request()->action()]))
         $this->error('未设置接口地址');
 
-        $res                = $this->apiData($parame,$this->apiUrl[request()->action()],false);
-        $menuData           = $this->getApiData();
-        $menuList 			= (isset($menuData['lists']) && !empty($menuData['lists'])) ? $menuData['lists'] : [];
+        $res                = $this->apiData($parame,$this->apiUrl[request()->action()]);
+        $data               = $this->getApiData() ;
+
+        $total 				= 0;
+        $p 					= '';
+        $listData 			= [];
+
+        if ($res){
+
+            //分页信息
+            $page           = new \xnrcms\Page($data['total'], $data['limit']);
+            if($data['total']>=1){
+
+                $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
+                $page->setConfig('header','');
+            }
+
+            $p 				= trim($page->show());
+            $total 			= $data['total'];
+            $listData   	= $data['lists'];
+        }
+
+        if ($isTree === 1) {
+            $Tree          = new \xnrcms\DataTree($listData);
+            $listData      = $Tree->toFormatTree();
+        }
 
 		//页面数据
 		$pageData						= [];
@@ -68,13 +111,19 @@ class Devmenu extends Base
 		Cookie('__forward__',$_SERVER['REQUEST_URI']);
 
 		//渲染数据到页面模板上
-		$assignData['pageData'] 		= $pageData;
-		$Tree           				= new \xnrcms\DataTree($menuList);
-		$assignData['menu'] 			= $Tree->toFormatTree();
-		$this->assignData($assignData);
+        $assignData['isTree']           = $isTree;
+        $assignData['_page']            = $p;
+        $assignData['_total']           = $total;
+        $assignData['topMenu']          = $topMenu;
+        $assignData['rightMenu']        = $rightMenu;
+        $assignData['listId']           = $listId;
+        $assignData['listNode']         = $listNode;
+        $assignData['listData']         = $listData;
+        $assignData['pageData']         = $pageData;
+        $this->assignData($assignData);
 
 		//加载视图模板
-		return view();
+		return view('catlist');
 	}
 
 	/**
@@ -257,6 +306,28 @@ class Devmenu extends Base
         }
 
         return $info;
+    }
+
+    public function release()
+    {
+    	//请求地址
+        if (!isset($this->apiUrl[request()->action()])||empty($this->apiUrl[request()->action()])) 
+        $this->error('未设置接口地址');
+        
+        //请求参数
+        $parame             = [];
+        $parame['uid']      = $this->uid;
+        $parame['hashid']   = $this->hashid;
+
+        //接口调用
+        $res       = $this->apiData($parame,$this->apiUrl[request()->action()]) ;
+        $data      = $this->getApiData();
+        
+        if($res == true){
+            $this->success('发布成功',url('index')) ;
+        }else{
+        	$this->error('发布失败');
+        }
     }
 }
 ?>

@@ -51,6 +51,7 @@ class {ControllerName} extends Base
         $menuid     = isset($param['menuid']) ? $param['menuid'] : 0;
         $page       = isset($param['page']) ? $param['page'] : 1;
         $search     = isset($param['search']) ? $param['search'] : [];
+        $isTree     = 0;
 
         //页面操作功能菜单
         $topMenu    = formatMenuByPidAndPos($menuid,2, $this->menu);
@@ -88,6 +89,11 @@ class {ControllerName} extends Base
             $listData   	= $data['lists'];
         }
 
+        if ($isTree === 1) {
+            $Tree          = new \xnrcms\DataTree($listData);
+            $listData      = $Tree->toFormatTree();
+        }
+
         //页面头信息设置
         $pageData['isback']             = 0;
         $pageData['title1']             = '';
@@ -95,6 +101,7 @@ class {ControllerName} extends Base
         $pageData['notice']             = [];
 
         //渲染数据到页面模板上
+        $assignData['isTree']           = $isTree;
         $assignData['_page']            = $p;
         $assignData['_total']           = $total;
         $assignData['topMenu']          = $topMenu;

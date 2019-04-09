@@ -269,11 +269,13 @@ class DevTpl
         return $id;
       }
 
+
       //不存在新增并返回模板ID
       $updata                 = [];
       $updata['title']        = $title;
       $updata['pid']          = 0;
       $updata['cname']        = $cname;
+      $updata['config']       = '';
       $updata['create_time']  = $this->tt;
       $updata['update_time']  = $this->tt;
 

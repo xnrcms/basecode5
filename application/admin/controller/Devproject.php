@@ -8,11 +8,11 @@
  * 不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  */
-namespace app\api\controller;
+namespace app\admin\controller;
 
 use app\common\controller\Base;
 
-class Ad extends Base
+class Devproject extends Base
 {
     //接口构造
     public function __construct(){

@@ -184,7 +184,7 @@ class Usergroup extends Base
         $ids     = request()->param();
         $ids     = (isset($ids['ids']) && !empty($ids['ids'])) ? $ids['ids'] : $this->error('请选择要操作的数据');;
         $ids     = is_array($ids) ? implode($ids,',') : '';
-
+$this->error('未设置接口地址1');
         //请求参数
         $parame['uid']          = $this->uid;
         $parame['hashid']       = $this->hashid;

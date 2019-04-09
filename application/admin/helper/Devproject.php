@@ -10,15 +10,15 @@
  * Helper只要处理业务逻辑，默认会初始化数据列表接口、数据详情接口、数据更新接口、数据删除接口、数据快捷编辑接口
  * 如需其他接口自行扩展，默认接口如实在无需要可以自行删除
  */
-namespace app\api\helper;
+namespace app\admin\helper;
 
 use app\common\helper\Base;
 use think\facade\Lang;
 
-class Invitation extends Base
+class Devproject extends Base
 {
 	private $dataValidate 		= null;
-    private $mainTable          = 'user_invitation';
+    private $mainTable          = '';
 	
 	public function __construct($parame=[],$className='',$methodName='',$modelName='')
     {
@@ -51,12 +51,6 @@ class Invitation extends Base
         return json($this->getReturnData());
     }
 
-    //支持内部调用
-    public function isInside($parame,$aName)
-    {
-        return $this->$aName($parame);
-    }
-
     /**
      * 接口列表数据
      * @param  [array] $parame 接口参数
@@ -80,7 +74,7 @@ class Invitation extends Base
 		//定义关联查询表信息，默认是空数组，为空时为单表查询,格式必须为一下格式
 		//Rtype :`INNER`、`LEFT`、`RIGHT`、`FULL`，不区分大小写，默认为`INNER`。
 		$RelationTab				= [];
-		$RelationTab['user_detail']	= array('Ralias'=>'ud','Ron'=>'ud.uid=main.uid','Rtype'=>'LEFT','Rfield'=>array('face'));
+		//$RelationTab['member']		= array('Ralias'=>'me','Ron'=>'me.uid=main.uid','Rtype'=>'LEFT','Rfield'=>array('nickname'));
 
 		$modelParame['RelationTab']	= $RelationTab;
 
@@ -94,7 +88,7 @@ class Invitation extends Base
 		$modelParame['order']		= 'main.id desc';		
 		
 		//数据分页步长定义
-		$modelParame['limit']		= isset($parame['limit']) ? $parame['limit'] : 10;
+		$modelParame['limit']		= $this->apidoc == 2 ? 1 : 10;
 
 		//数据分页页数定义
 		$modelParame['page']		= (isset($parame['page']) && $parame['page'] > 0) ? $parame['page'] : 1;
@@ -111,9 +105,9 @@ class Invitation extends Base
     	if (!empty($data)) {
 
             //自行定义格式化数据输出
-    		foreach($data as $k=>$v){
-                $data[$k]['path']   = get_cover($v['face'],'path');
-    		}
+    		//foreach($data as $k=>$v){
+
+    		//}
     	}
 
     	$lists['lists'] 			= $data;
@@ -244,80 +238,6 @@ class Invitation extends Base
 
     	return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>['count'=>$delCount]];
     }
-
-    /*api:229412bfdb393e54c1915389809d55e9*/
-    /**
-     * * 推广明细
-     * @param  [array] $parame 接口参数
-     * @return [array]         接口输出数据
-     */
-    private function distributionList($parame)
-    {
-        //主表数据库模型
-        $dbModel                    = model('user_distribution');
-
-        /*定义数据模型参数*/
-        //主表名称，可以为空，默认当前模型名称
-        $modelParame['MainTab']     = 'user_distribution';
-
-        //主表名称，可以为空，默认为main
-        $modelParame['MainAlias']   = 'main';
-
-        //主表待查询字段，可以为空，默认全字段
-        $modelParame['MainField']   = [];
-
-        //定义关联查询表信息，默认是空数组，为空时为单表查询,格式必须为一下格式
-        //Rtype :`INNER`、`LEFT`、`RIGHT`、`FULL`，不区分大小写，默认为`INNER`。
-        $RelationTab                = [];
-        $RelationTab['user_detail'] = array('Ralias'=>'ud','Ron'=>'ud.uid=main.uid1','Rtype'=>'LEFT','Rfield'=>array('nickname'));
-
-        $modelParame['RelationTab'] = $RelationTab;
-
-        $search['uid']              = $parame['uid'];
-        $parame['search']           = json_encode($search);
-        //接口数据
-        $modelParame['apiParame']   = $parame;
-
-        //检索条件 需要对应的模型里面定义查询条件 格式为formatWhere...
-        $modelParame['whereFun']    = 'formatWhereDefault';
-
-        //排序定义
-        $modelParame['order']       = 'main.id desc';       
-        
-        //数据分页步长定义
-        $modelParame['limit']       = isset($parame['limit']) ? $parame['limit'] : 10;
-
-        //数据分页页数定义
-        $modelParame['page']        = (isset($parame['page']) && $parame['page'] > 0) ? $parame['page'] : 1;
-
-        //数据缓存是时间，默认0 不缓存 ,单位秒
-        $modelParame['cacheTime']   = 0;
-
-        //列表数据
-        $lists                      = $dbModel->getPageList($modelParame);
-
-        //数据格式化
-        $data                       = (isset($lists['lists']) && !empty($lists['lists'])) ? $lists['lists'] : [];
-
-        if (!empty($data)) {
-
-            //自行定义格式化数据输出
-            foreach($data as $k=>$v){
-                $data[$k]['create_time']   = date('Y-m-d H:i:s',$v['create_time']);
-            }
-        }
-
-        $userModel     = model('user_detail');
-        $userinfo      = $userModel->getOneByUid($parame['uid']);
-        $userinfo      = !empty($userinfo) ? $userinfo->toArray() : [];
-
-        $lists['total_money']       = $userinfo['profit_all'];
-        $lists['lists']             = $data;
-
-        return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>$lists];
-    }
-
-    /*api:229412bfdb393e54c1915389809d55e9*/
 
     /*接口扩展*/
 }

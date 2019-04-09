@@ -74,8 +74,6 @@ var CommonJs = {
                 layer.msg('有操作在进行，请稍等...',{ icon: 0,time:2000});return false;
             }
 
-            CommonJs.Loading    = true;
-
             layer.confirm('确认要'+actionName+'吗？',function(index){
                 var ids         = [];
 
@@ -96,6 +94,8 @@ var CommonJs = {
 
                     layer.msg('请求处理中，请稍等...',{ icon: 16,time:1000000});
 
+                    CommonJs.Loading    = true;
+                    
                     $.post(url, { 'ids':ids}, function(data){
 
                         CommonJs.Loading    = false;

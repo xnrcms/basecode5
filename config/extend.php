@@ -57,4 +57,15 @@ return [
         'gdmap'         => '高德地图',
         'expand'        => '自定义拓展',
     ],
+    'list_type_list'            => [
+        'string'        => '字符串',
+        'number'        => '数字',
+        'price'         => '价格',
+        'select'        => '枚举',
+        'bool'          => '布尔',
+        'datetime'      => '时间(Y-m-d H:i:s)',
+        'image'         => '单图上传',
+        'done'          => '操作',
+        'id'            => 'ID'
+    ],
 ];

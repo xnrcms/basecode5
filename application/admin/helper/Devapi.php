@@ -1233,6 +1233,7 @@ class Devapi extends Base
 
             $apiParame['request_parame']   = $request_parame;
             $apiParame['back_parame']      = $back_parame;
+            $apiParame['api_id']           = $apiid;
             $apiParame['api_release']      = time();
 
             $parameStr                  = serialize($apiParame);

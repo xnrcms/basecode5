@@ -33,6 +33,35 @@ class Devmenu extends Base
         return !empty($res) ? true : false;
     }
 
+    public function saveData($id = 0,$parame = []){
+        $info           = $id <= 0 ? $this->addData($parame) : $this->updateById($id,$parame);
+
+        //设置path
+        $updata         = [];
+        if (isset($parame['pid']) && $parame['pid'] > 0) {
+            $pinfo              = $this->getOneById($parame['pid']);
+            $updata['path']     = $pinfo['path'] . $info['id'] . '-';
+        }else{
+            $updata['path']     = '-' . $info['id'] . '-';
+        }
+
+        $updata['update_time']  = time() + 5;
+
+        $info   = $this->updateById($info['id'],$updata);
+
+        return $info;
+    }
+
+    public function getReleaseMenu($parame)
+    {
+        $project_id     = isset($parame['project_id']) ? (int)$parame['project_id'] : 0;
+        $data           = [];
+        $res            = $this->where('project_id','eq',$project_id)->where('status','eq',1)->select();
+        $data           = !empty($res) ? $res->toArray() : [];
+
+        return $data;
+    }
+
     private function getRulesByUid($parame){
         $rules                  = '';
         $gainfo                 = model('auth_group_access')->baseGetPageList(['apiParame'=>$parame,'whereFun'=>'formatWhereAuthGroupAccess']);

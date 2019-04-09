@@ -16,7 +16,9 @@ class Base extends Controller
 	public function __construct()
     {
         parent::__construct();
+
         $this->baseData         = [];
+
         //当前用户ID
         $this->uid              = is_login();
 
@@ -36,7 +38,7 @@ class Base extends Controller
 		}*/
 
 		//菜单ID
-        $this->menuid           = input('menuid',0);
+        $this->menuid       = input('menuid',0);
 
 		//当前登录用户详细资料
 		$this->userInfo		= $this->userInfo();
@@ -46,28 +48,24 @@ class Base extends Controller
         if(!$this->checkMenu()) $this->error('未授权访问！');
 
 		//当前用户拥有的所有菜单权限
-		$this->menu 			= cache('SystemAuthMenu' . $this->hashid);
-
-        if(empty($this->menu)){
-
-        	//菜单数据缓存
-			$parame['uid']		= $this->uid;
-	        $parame['hashid']	= $this->hashid;
-            $parame['page']     = 1;
-            $parame['search']   = '';
-
-            $res 				= $this->apiData($parame,'Api/Sys/menus');
-            $allMenu 			= $this->getApiData();
-
-            $this->menu 		= (!empty($allMenu) && isset($allMenu['lists'])) ? $allMenu['lists'] : [];
-
-            cache('SystemAuthMenu' . $this->hashid,$this->menu);
-        }
-
-        $this->menu              = $this->formatAuthMenu($this->menu,$this->userInfo['rules'],$this->uid,$this->menuid);
-        $this->extends_param     = '';
-        $this->isdev             = config('extend.is_dev');
+		$this->menu 			= $this->ininMenu();
+        $this->menu             = $this->formatAuthMenu($this->menu,$this->userInfo['rules'],$this->uid,$this->menuid);
+        $this->extends_param    = '';
+        $this->isdev            = config('extend.is_dev');
 	}
+
+    public function ininMenu()
+    {
+        $filename               = 'menu'. md5('menu.data.project_id=0');
+        $devMenu                = file_get_contents(\Env::get('APP_PATH') . 'common/parame/' . $filename.'.php');
+        $devMenu                = !empty($devMenu) ? unserialize($devMenu) : [];
+
+        $filename               = 'menu'. md5('menu.data.project_id=1');
+        $sysMenu                = file_get_contents(\Env::get('APP_PATH') . 'common/parame/' . $filename.'.php');
+        $sysMenu                = !empty($sysMenu) ? unserialize($sysMenu) : [];
+
+        return array_merge($devMenu,$sysMenu);
+    }
 
     /**
      * 显示分类树，仅支持内部调

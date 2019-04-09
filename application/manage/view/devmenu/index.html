@@ -14,36 +14,27 @@
         <table cellspacing="0" cellpadding="0" style="width: 100%;">
           <thead>
             <tr>
-              <th align="center" axis="col0" width="5%" class="sign"><div style="margin-left: 5px;"><i class="ico-check"></i></div></th>
-              <th align="center" axis="col1" width="26%" class="handle"><div style="margin-left: 5px;">操作(ID)</div></th>
-              <th align="center" axis="col3" width="22%"><div style="text-align: center;">菜单名称</div></th>
-              <th align="center" axis="col4" width="22%"><div style="text-align: center;">菜单URL</div></th>
-              <th align="center" axis="col5" width="5%"><div style="text-align: center;">是否启用</div></th>
-              <th align="center" axis="col6" width="10%"><div style="text-align: center;">显示位置</div></th>
-              <th align="center" axis="col9" width="10%"><div style="text-align: center;">排序</div></th>
+              <th align="center" axis="col0" width="2%" ><div><i class="ico-check"></i></div></th>
+              <th align="center" axis="col1" width="25%"><div style="margin-left: 15px;">操作(ID)</div></th>
+              <th align="center" axis="col3" width="20%"><div style="margin-left: 15px;">菜单名称</div></th>
+              <th align="center" axis="col4" width="25%"><div style="margin-left: 15px;">菜单URL</div></th>
+              <th align="center" axis="col5" width="5%" ><div style="margin-left: 5px;">是否启用</div></th>
+              <th align="center" axis="col6" width="13%"><div style="text-align: center;">显示位置</div></th>
+              <th align="center" axis="col9" width="10%"><div style="margin-left: 15px;">排序</div></th>
             </tr>
           </thead>
         </table>
       </div>
     </div>
-    <div class="tDiv">
-      <div class="tDiv2">
-       <a href="{:url('add')}">
-        <div class="fbutton">
-          <div title="新增菜单" class="add">
-            <span><i class="fa fa-plus"></i>新增菜单</span>
-          </div>
-        </div>
-       </a> 
-      </div>
-      <div style="clear:both"></div>
-    </div>      
+    
+    {include file="public/list/topButton" /}
+
     <div style="height: auto;" class="bDiv">
       <table cellspacing="0" cellpadding="0" border="0" id="article_cat_table" class="flex-table autoht">
         <tbody id="treet1">
-       {foreach name="menu" item="vo" key="k"}
+       {foreach name="listData" item="vo" key="k"}
         <tr data-level="{$vo['level']}" parent_id_path ="{$vo.parent_id_path}" class="parent_id_{$vo.pid}" nctype="0" {if condition="$vo['level'] gt 1"} style="display:none;"{/if}>
-            <td class="sign" width="5%">
+            <td class="sign" width="2%">
             {if condition="$vo['count'] gt 0"}
               <div style="text-align: left;"> 
               	<img onClick="treeClicked(this,{$vo.id},'{$vo.parent_id_path}')" nc_type="flex" status="open" fieldid="2" src="/3.0/images/tv-collapsable-last.gif">                    
@@ -55,7 +46,7 @@
             {/if}  
             </td>
 
-            <td class="handle" width="26%">
+            <td class="handle" width="25%">
               <div style="text-align: left;">
                 <span style="margin-left:{php} echo (($vo['level']-1) * 2);{/php}em" class="btn">
                   <em><i class="fa fa-cog"></i>设置(<font color="red" size="2">{$vo.id}</font>)<i class="arrow"></i></em>
@@ -68,12 +59,12 @@
               </div>
             </td>
 
-            <td class="name" width="22%">
+            <td class="name" width="20%">
               <div style="text-align: center;">
                 <input type="text" value="{$vo.title}" oldValue="{$vo.title}" onblur="CommonJs.quickEdit(this,'{:url('quickEdit')}','title','{$vo.id}',1);" style="text-align: left; width:90%;"/>
               </div>
             </td>
-            <td class="name" width="22%">
+            <td class="name" width="25%">
               <div style="text-align: center;">                 
                 <input type="text" value="{$vo.url}" oldValue="{$vo.url}" onblur="CommonJs.quickEdit(this,'{:url('quickEdit')}','url','{$vo.id}',1);" style="text-align: left; width:90%;"/>
               </div>
@@ -90,7 +81,7 @@
                 </div>
             </td>
 
-            <td align="center" class="" width="10%">
+            <td align="center" class="" width="13%">
               <div style="text-align: center;">菜单位置{$vo.pos}</div>
             </td>
 

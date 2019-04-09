@@ -193,28 +193,6 @@ class Base
     }
 
     /**
-     * [setBackData 设置接口返回数据]
-     * @access protected
-     * @param array $backData [返回的数据]
-     * @return array
-     */
-    protected function setBackData($backData = []){
-
-      $this->backData   = empty($backData) ? [] : $backData;
-    }
-
-    /**
-     * [setCheckData 设置请求数据]
-     * @access protected
-     * @param array $checkData [请求的数据]
-     * @return array
-     */
-    protected function setCheckData($checkData){
-      
-      $this->checkData  = empty($checkData) ? [] : $checkData;
-    }
-
-    /**
      * [checkData 数据安全校验]
      * @access protected
      * @param  array $postData  [接口提交的所有数据]

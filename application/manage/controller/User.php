@@ -120,7 +120,7 @@ class User extends Base
             $total 			= $data['total'];
             $listData   	= $data['lists'];
         }
-
+        
         //缓存数据
         cache('user_list_for_gid',$arr['gid']);
 

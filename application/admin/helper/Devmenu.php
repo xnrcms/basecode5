@@ -110,10 +110,11 @@ class Devmenu extends Base
 
     	if (!empty($data)) {
 
+            $status                 = ['未知','启用','禁用'];
             //自行定义格式化数据输出
-    		//foreach($data as $k=>$v){
-
-    		//}
+    		foreach($data as $k=>$v){
+                $data[$k]['status']     = $status[$v['status']];
+    		}
     	}
 
     	$lists['lists'] 			= $data;
@@ -164,15 +165,10 @@ class Devmenu extends Base
 		
         //通过ID判断数据是新增还是更新
     	if ($id <= 0) {
-            $saveData['create_time']                = time();
-            
-            //执行新增
-    		$info 									= $dbModel->addData($saveData);
-    	}else{
-
-            //执行更新
-    		$info 									= $dbModel->updateById($id,$saveData);
+            $saveData['create_time']            = time();
     	}
+
+        $info                                   = $dbModel->saveData($id,$saveData);
 
     	if (!empty($info)) {
 
@@ -270,6 +266,39 @@ class Devmenu extends Base
 
     	return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>['count'=>$delCount]];
     }
+
+    /*api:cb115b3f0116f9cabf9c46503a23027d*/
+    /**
+     * * 菜单发布
+     * @param  [array] $parame 接口参数
+     * @return [array]         接口输出数据
+     */
+    private function releaseData($parame)
+    {
+        //主表数据库模型
+        $dbModel                = model($this->mainTable);
+
+        //自行书写业务逻辑代码
+
+        $project_id             = 0;
+        $menu                   = $dbModel->getReleaseMenu(['project_id'=>$project_id]);
+
+        $filename               = 'menu'. md5('menu.data.project_id=' . $project_id);
+        $content                = serialize($menu);
+        $paramePath             = \Env::get('APP_PATH') . 'common/parame/' . $filename.'.php';
+
+        //先删除原有的参数文件
+        if (file_exists($paramePath)) unlink($paramePath);
+
+        file_put_contents($paramePath,$content);
+
+        //需要返回的数据体
+        $Data                   = ['id'=>1];
+
+        return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>$Data];
+    }
+
+    /*api:cb115b3f0116f9cabf9c46503a23027d*/
 
     /*接口扩展*/
 }
