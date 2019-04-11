@@ -15,7 +15,7 @@ namespace app\common\model;
 use think\Model;
 use think\Db;
 
-class UserGroup extends Base
+class Menu extends Base
 {
     //默认主键为id，如果你没有使用id作为主键名，需要在此设置
     protected $pk = 'id';
@@ -42,44 +42,6 @@ class UserGroup extends Base
         return $model;
     }
 
-    /**
-     * 通过用户ID获取用户组列表
-     * @param  number $uid 用户ID
-     * @return array       用户组数据
-     */
-    public function getUserGroupListById($id=0)
-    {
-      if (empty($id))  return [];
-
-      if (is_numeric($id)) {
-        $id   = [$id];
-      }
-
-      $lists      = $this->where('status','=',1)->where('id','in',$id)->field('id,title,rules')->select()->toArray();
-
-      return $lists;
-    }
-
-    public function checkValue($value,$id,$field){
-
-        $res    = $this->where('id','not in',[$id])->where($field,'eq',$value)->value($field);
-
-        return !empty($res) ? true : false;
-    }
-    
-    public function getAllUserGorupTitle()
-    {
-        $ckey                       = md5('getAllUserGorupTitle');
-        $ctag                       = 'user_group_list';
-        $data                       = $this->getCache($ckey);
-        if (empty($data)){
-
-            $data                   = $this->where('status','=',1)->field('id,title')->select()->toArray();
-            $this->setCache($ckey,$data,$ctag);
-        }
-
-        return $data;
-    }
     //自行扩展更多
     //...
 }

@@ -19,7 +19,11 @@ $theadCount  = count($listNode['thead']);
             {elseif condition="$vo['tag'] eq 'done'" /}
             <td {$vo.attr} width="{$vo.width}%" class="handle">
                 {if condition="$theadNum eq $theadCount"}
-                    {include file="public/list/option2" /}
+                    {if condition="$vo['width'] elt 8"}
+                        {include file="public/list/option1" /}
+                    {else /}
+                        {include file="public/list/option2" /}
+                    {/if}
                 {else /}
                     {include file="public/list/option1" /}
                 {/if}

@@ -56,7 +56,7 @@ class Logs extends Base
 		    $add['log_ip'] 		= request()->ip();
 		    $add['log_url'] 	= request()->baseUrl();
 		    $add['log_type'] 	= $log_type;
-		    $add['cache_tag'] 	= 'log_type_'.$log_type;
+		    $add['ctag'] 		= 'log_type_'.$log_type;
 
 		    $this->addData($add);
 
@@ -74,7 +74,7 @@ class Logs extends Base
 		
 		$this->where('log_type','in',[0,$log_type])->delete();
 		
-		$this->clearCache(['cache_tag'=>'log_type_'.$log_type]);
+		$this->clearCache(['ctag'=>'log_type_'.$log_type]);
 
 		return $count;
 	}

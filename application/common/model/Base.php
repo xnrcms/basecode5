@@ -13,51 +13,81 @@ use think\facade\Cache;
 class Base extends Model
 {
 	//新增数据
-	public function addData($data = []){
+	public function addData($data = [])
+	{
 		return $this->baseAddData($data);
 	}
 
 	//删除数据
-	public function delData($id){
+	public function delData($id)
+	{
 		return $this->baseDelData($id);
 	}
 
 	//通过主键ID获取数据
-	public function getOneById($id = 0,$tag=''){
+	public function getOneById($id = 0,$tag='')
+	{
 		return $this->baseGetOneById($id,$tag);
 	}
 
 	//获取列表数据
-	public function getPageList($modelParame = []){
+	public function getPageList($modelParame = [])
+	{
 		return $this->baseGetPageList( $modelParame );
 	}
 
 	//通过主键ID更新数据
-	public function updateById($id = 0,$data = []){
+	public function updateById($id = 0,$data = [])
+	{
 		return $this->baseUpdateById($id,$data);
 	}
 
 	//通过主键ID批量更新数据
-	public function updateByIds($data = []){
+	public function updateByIds($data = [])
+	{
 		return $this->baseUpdateByIds($data);
 	}
 
 	//获取数据条数
-	public function getDataCount($modelParame){
+	public function getDataCount($modelParame)
+	{
 		return $this->baseGetDataCount($modelParame);
 	}
 
-	public function clearCache($parame){
-
+	public function clearCache($parame)
+	{
 		$id 	= isset($parame['id']) ? intval($parame['id']) : 0;
-		$tag 	= isset($parame['cache_tag']) ? 'table_' . $this->name . '_' . trim($parame['cache_tag']) : '';
+		$tag 	= isset($parame['ctag']) ? 'table_' . $this->name . '_' . trim($parame['ctag']) : '';
+		$ckey 	= isset($parame['ckey']) ? trim($parame['ckey']) : '';
 
 		if ($id > 0) Cache::rm('table_' . $this->name . '_' . $id);
 		if (!empty($tag)) Cache::clear($tag);
+		if (!empty($ckey)) Cache::rm($ckey);
+	}
+
+	public function setCache($ckey = '',$data = '',$tag = '')
+	{
+		if (!empty($ckey)) {
+			$tag 		= !empty($tag) ? 'table_' . $this->name . '_' . $tag : '';
+			$data 		= (is_array($data) && !empty($data)) ? serialize($data) : $data;
+
+			if (empty($tag)) {
+				Cache::set($ckey,$data,config('extend.cache_time'));
+			}else{
+				Cache::tag($tag)->set($ckey,$data,config('extend.cache_time'));
+			}
+		}
+	}
+
+	public function getCache($ckey = '')
+	{
+		$data 		= Cache::get($ckey,null);
+		return !empty($data) ? unserialize($data) : [];
 	}
 
 	//新增
-	protected function baseAddData($data){
+	protected function baseAddData($data)
+	{
 		$info			= null;
 		$pk 			= $this->pk;
 
@@ -66,15 +96,13 @@ class Base extends Model
 			foreach ($data as $key => $value) {
 
 				$this->$key 		= $value;
-
 			}
 
 			$isAddSucess			= $this->isUpdate(false)->allowField(true)->save();
 
 			if ($isAddSucess > 0 && $this->$pk > 0) {
 
-				$tag 				= isset($data['cache_tag']) ? $data['cache_tag'] : '';
-
+				$tag 				= isset($data['ctag']) ? $data['ctag'] : '';
 				$info 				= $this->getOneById($this->$pk,$tag);
 			}
 		}
@@ -83,8 +111,8 @@ class Base extends Model
 	}
 
 	//删除
-	protected function baseDelData($id,$isDel=false){
-
+	protected function baseDelData($id,$isDel=false)
+	{
 		$ids = (is_string($id) || is_numeric($id)) ? explode(',', $id) : $id;
 
 		if (empty($ids))  return 0;
@@ -104,8 +132,9 @@ class Base extends Model
 	}
 
 	//修改	通过主键ID单个修改
-	protected function baseUpdateById($id,$data){
-		$tag 			= isset($data['cache_tag']) ? $data['cache_tag'] : '';
+	protected function baseUpdateById($id,$data)
+	{
+		$tag 			= isset($data['ctag']) ? $data['ctag'] : '';
 		$info			= $this->getOneById($id,$tag);
 
 		if (!empty($info) && !empty($data)) {
@@ -150,10 +179,9 @@ class Base extends Model
 	}
 
 	//查询	通过主键ID
-	protected function baseGetOneById($id=0,$tag=''){
-		if ($id <= 0) {
-			return null;
-		}
+	protected function baseGetOneById($id=0,$tag='')
+	{
+		if ($id <= 0) return null;
 
 		$cacheDataKey		= 'table_' . $this->name . '_' . $id;
 
@@ -165,11 +193,9 @@ class Base extends Model
 
 			if ($info) {
 
-				$cacheData = serialize($info) ;
+				$cacheData 	= serialize($info) ;
 
-				$tag 		= 'table_' . $this->name . (!empty($tag) ? '_'.$tag : '');
-
-				Cache::tag($tag)->set($cacheDataKey,$cacheData,config('extend.cache_time'));
+				$this->setCache($cacheDataKey,$cacheData,$tag);
 			}
 		}else{
 
@@ -179,7 +205,8 @@ class Base extends Model
 		return $info;
 	}
 
-	protected function format_where($model,$where){
+	protected function format_where($model,$where)
+	{
 		if (!empty( $where)) {
         	foreach ( $where as $key => $value) {
         		$model->where ( $value[0],$value[1] ,$value[2]);
@@ -187,15 +214,15 @@ class Base extends Model
         }
         return $model;
 	}
-	protected function baseGetDataCount($modelParame){
-		$aliasName 			= (isset($modelParame['MainAlias']) && !empty($modelParame['MainAlias'])) ? $modelParame['MainAlias'] : 'Main';
-		$MainTab 			= (isset($modelParame['MainTab']) && !empty($modelParame['MainTab'])) ? $modelParame['MainTab'] : '';
-		$relationTab 		= (isset($modelParame['RelationTab']) && !empty($modelParame['RelationTab'])) ? $modelParame['RelationTab'] : '';
 
-		$model 				= $this->getDbModel($MainTab)->alias($aliasName);
-		$RelationTab		= $this->getRelationTab($relationTab);
-       
-        $tables	  			= $RelationTab['tables'];
+	protected function baseGetDataCount($modelParame)
+	{
+		$aliasName 		= (isset($modelParame['MainAlias']) && !empty($modelParame['MainAlias'])) ? $modelParame['MainAlias'] : 'Main';
+		$MainTab 		= (isset($modelParame['MainTab']) && !empty($modelParame['MainTab'])) ? $modelParame['MainTab'] : '';
+		$relationTab 	= (isset($modelParame['RelationTab']) && !empty($modelParame['RelationTab'])) ? $modelParame['RelationTab'] : '';
+		$model 			= $this->getDbModel($MainTab)->alias($aliasName);
+		$RelationTab	= $this->getRelationTab($relationTab);
+        $tables	  		= $RelationTab['tables'];
 
 		if (!empty($tables)) {
 			foreach ($tables as $key => $value) {
@@ -205,17 +232,16 @@ class Base extends Model
 
 		//查询条件
         if (isset($modelParame['whereFun']) && !empty($modelParame['whereFun'])) {
-
-        	$apiParame 				= (isset($modelParame['apiParame']) && !empty($modelParame['apiParame'])) ? $modelParame['apiParame'] : [];
-        	$whereFun 				= $modelParame['whereFun'];
-        	$model   				= $this->$whereFun($model,$apiParame);
-        	
+        	$apiParame 	= (isset($modelParame['apiParame']) && !empty($modelParame['apiParame'])) ? $modelParame['apiParame'] : [];
+        	$whereFun 	= $modelParame['whereFun'];
+        	$model   	= $this->$whereFun($model,$apiParame);
         }
 
 		return $model->count();
 	}
 
-	protected function getDbModel($model){
+	protected function getDbModel($model)
+	{
 		//数据对象初始化
         if (empty($model)) {
         	$model 				= db($this->name);
@@ -225,9 +251,10 @@ class Base extends Model
 
         return $model;
 	}
-	//查询	获取列表数据
-	protected function baseGetPageList( $modelParame = [] ) {
-        
+
+	//查询 获取列表数据
+	protected function baseGetPageList( $modelParame = [] )
+	{
         if ( !isset($modelParame['MainTab']) || empty($modelParame['MainTab'])) {
         	$modelParame['MainTab']		= $this->formatModelName($this->name);
         }
@@ -311,7 +338,8 @@ class Base extends Model
 	}
 
 	//定义关联查询表以及字段
-	protected function getRelationTab($RelationTab){
+	protected function getRelationTab($RelationTab)
+	{
 		$tables	  		= [];
 		$fields 		= '';
 		if (!empty($RelationTab)){
@@ -338,10 +366,12 @@ class Base extends Model
 				}
 			}
 		}
+
 		return array('tables'=>$tables,'fields'=>$fields);
 	}
 
-	protected function format_fields_string($fields, $prefix = '') {
+	protected function format_fields_string($fields, $prefix = '')
+	{
         if ($prefix != '') {
             foreach ($fields as $key => $val) {
                 $fields[$key] = $prefix . '.' . $val;
@@ -350,7 +380,8 @@ class Base extends Model
         return implode(',', $fields);
     }
 
-    private function formatModelName($name){
+    private function formatModelName($name)
+    {
 	  $temp_array 		= array();
 
 	  for($i=0;$i<strlen($name);$i++){
@@ -366,12 +397,10 @@ class Base extends Model
 
 	        $temp_array[] = '_'.chr($ascii_code + 32);
 	      }
-
 	    }else{
 
 	      $temp_array[] = $name[$i];
 	    }
-
 	  }
 
 	  return implode('',$temp_array);

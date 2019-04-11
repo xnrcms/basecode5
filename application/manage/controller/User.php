@@ -34,6 +34,19 @@ class User extends Base
         $this->apiUrl['quickEditUserDetailData']    = 'Api/User/quickEditUserDetailData';
     }
 
+    //所有用户，不按用户组划分
+    public function alluser()
+    {
+        $arr['listid']             = 'user/index';
+        $arr['gid']                = 0;
+        $arr['isback']             = 0;
+        $arr['title1']             = '用户-用户管理';
+        $arr['title2']             = '网站系统用户-用户索引与管理';
+        $arr['notice']             = ['用户-用户列表管理, 对系统管理员进行维护.'];
+
+        return $this->index($arr);
+    }
+
     //管理员
     public function adminuser()
     {

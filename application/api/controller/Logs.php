@@ -8,11 +8,11 @@
  * 不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  */
-namespace app\admin\controller;
+namespace app\api\controller;
 
 use app\common\controller\Base;
 
-class UserGroup extends Base
+class Logs extends Base
 {
     //接口构造
     public function __construct(){
@@ -75,6 +75,21 @@ class UserGroup extends Base
         //执行接口调用
         return $this->execApi($parame);
     }
+
+    /*api:269bf6a7f02ce2045af284e9bda57683*/
+    /**
+     * 操作日志清理
+     * @access public
+     * @param  [array] $parame 扩展参数
+     * @return [json]          接口数据输出
+    */
+    public function clearLogs($parame = []){
+
+        //执行接口调用
+        return $this->execApi($parame);
+    }
+
+    /*api:269bf6a7f02ce2045af284e9bda57683*/
 
     /*接口扩展*/
 }

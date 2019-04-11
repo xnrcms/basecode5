@@ -56,7 +56,7 @@ class Devmenu extends Base
     {
         $project_id     = isset($parame['project_id']) ? (int)$parame['project_id'] : 0;
         $data           = [];
-        $res            = $this->where('project_id','eq',$project_id)->where('status','eq',1)->select();
+        $res            = $this->where('project_id','eq',$project_id)->where('status','eq',1)->order('sort desc')->select();
         $data           = !empty($res) ? $res->toArray() : [];
 
         return $data;

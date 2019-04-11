@@ -10,15 +10,15 @@
  * Helper只要处理业务逻辑，默认会初始化数据列表接口、数据详情接口、数据更新接口、数据删除接口、数据快捷编辑接口
  * 如需其他接口自行扩展，默认接口如实在无需要可以自行删除
  */
-namespace app\admin\helper;
+namespace app\api\helper;
 
 use app\common\helper\Base;
 use think\facade\Lang;
 
-class Devmenu extends Base
+class Logs extends Base
 {
 	private $dataValidate 		= null;
-    private $mainTable          = 'devmenu';
+    private $mainTable          = '';
 	
 	public function __construct($parame=[],$className='',$methodName='',$modelName='')
     {
@@ -33,7 +33,7 @@ class Devmenu extends Base
      * @param  [string] $methodName 方法名
      * @return [array]              接口输出数据
      */
-    public function apiRun()
+	public function apiRun()
     {   
         if (!$this->checkData($this->postData)) return json($this->getReturnData());
         //加载验证器
@@ -56,7 +56,7 @@ class Devmenu extends Base
     {
         return $this->$aName($parame);
     }
-    
+
     /**
      * 接口列表数据
      * @param  [array] $parame 接口参数
@@ -91,10 +91,10 @@ class Devmenu extends Base
 		$modelParame['whereFun']	= 'formatWhereDefault';
 
 		//排序定义
-		$modelParame['order']		= 'main.sort desc,main.id desc';		
+		$modelParame['order']		= 'main.id desc';		
 		
 		//数据分页步长定义
-		$modelParame['limit']		= $this->apidoc == 2 ? 1 : 1000;
+		$modelParame['limit']		= isset($parame['limit']) ? $parame['limit'] : 10;
 
 		//数据分页页数定义
 		$modelParame['page']		= (isset($parame['page']) && $parame['page'] > 0) ? $parame['page'] : 1;
@@ -110,11 +110,10 @@ class Devmenu extends Base
 
     	if (!empty($data)) {
 
-            $status                 = ['未知','启用','禁用'];
             //自行定义格式化数据输出
-    		foreach($data as $k=>$v){
-                $data[$k]['status']     = $status[$v['status']];
-    		}
+    		//foreach($data as $k=>$v){
+
+    		//}
     	}
 
     	$lists['lists'] 			= $data;
@@ -137,25 +136,7 @@ class Devmenu extends Base
 
         //自行定义入库数据 为了防止参数未定义报错，先采用isset()判断一下
         $saveData                   = [];
-        $saveData['title']          = isset($parame['title']) ? $parame['title'] : '';
-        $saveData['status']         = isset($parame['status']) ? $parame['status'] : 2;
-        $saveData['url']            = isset($parame['url']) ? $parame['url'] : '';
-        $saveData['sort']           = isset($parame['sort']) ? $parame['sort'] : 1;
-        $saveData['pid']            = isset($parame['pid']) ? $parame['pid'] : 0;
-        $saveData['posttype']       = isset($parame['posttype']) ? $parame['posttype'] : '';
-        $saveData['pos']            = isset($parame['pos']) ? $parame['pos'] : 1;
-        $saveData['icon']           = isset($parame['icon']) ? $parame['icon'] : '';
-        $saveData['fsize']          = isset($parame['fsize']) ? $parame['fsize'] : '800*550';
-        $saveData['update_time']    = time();
-        //$saveData['parame']       = isset($parame['parame']) ? $parame['parame'] : '';
-
-        //数据校验
-        if(empty($saveData['title'])) return ['Code' => '100008', 'Msg'=>lang('100008',['title'])];
-        if(empty($saveData['url'])) return ['Code' => '100008', 'Msg'=>lang('100008',['url'])];
-
-        $saveData['fsize']          = !empty($saveData['fsize']) ? $saveData['fsize'] : '800*550';
-        $saveData['pos']            = ($saveData['pos'] >= 10 || $saveData['pos'] <= 0) ? 1 : $saveData['pos'];
-        $saveData['posttype']       = !in_array($saveData['posttype'],[1,2,3]) ? 1 : $saveData['posttype'];
+        //$saveData['parame']         = isset($parame['parame']) ? $parame['parame'] : '';
 
         //规避遗漏定义入库数据
         if (empty($saveData)) return ['Code' => '120021', 'Msg'=>lang('120021')];
@@ -165,10 +146,14 @@ class Devmenu extends Base
 		
         //通过ID判断数据是新增还是更新
     	if ($id <= 0) {
-            $saveData['create_time']            = time();
-    	}
 
-        $info                                   = $dbModel->saveData($id,$saveData);
+            //执行新增
+    		$info 									= $dbModel->addData($saveData);
+    	}else{
+
+            //执行更新
+    		$info 									= $dbModel->updateById($id,$saveData);
+    	}
 
     	if (!empty($info)) {
 
@@ -193,6 +178,7 @@ class Devmenu extends Base
         $id                 = isset($parame['id']) ? intval($parame['id']) : 0;
         if ($id <= 0) return ['Code' => '120023', 'Msg'=>lang('120023')];
 
+        //数据详情
     	$info 				= $dbModel->getOneById($id);
 
     	if (!empty($info)) {
@@ -224,6 +210,7 @@ class Devmenu extends Base
         $id                 = isset($parame['id']) ? intval($parame['id']) : 0;
         if ($id <= 0) return ['Code' => '120023', 'Msg'=>lang('120023')];
 
+        //根据ID更新数据
     	$info 				= $dbModel->updateById($id,[$parame['fieldName']=>$parame['updata']]);
 
     	if (!empty($info)) {
@@ -251,54 +238,33 @@ class Devmenu extends Base
 
         //自行定义删除条件
         //...
-        $modelParame['whereFun']    = 'formatWhereChildMenu';
-        $modelParame['apiParame']   = $parame;
-
-        $childMenuCount             = $dbModel->getDataCount($modelParame);
-
-        if ($childMenuCount > 0) {
-
-            return ['Code' => '500004', 'Msg'=>lang('500004')];
-        }
-
+        
         //执行删除操作
     	$delCount				= $dbModel->delData($id);
 
     	return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>['count'=>$delCount]];
     }
 
-    /*api:cb115b3f0116f9cabf9c46503a23027d*/
+    /*api:269bf6a7f02ce2045af284e9bda57683*/
     /**
-     * * 菜单发布
+     * * 操作日志清理
      * @param  [array] $parame 接口参数
      * @return [array]         接口输出数据
      */
-    private function releaseData($parame)
+    private function clearLogs($parame)
     {
         //主表数据库模型
         $dbModel                = model($this->mainTable);
 
         //自行书写业务逻辑代码
 
-        $project_id             = 1;
-        $menu                   = $dbModel->getReleaseMenu(['project_id'=>$project_id]);
-
-        $filename               = 'menu'. md5('menu.data.project_id=' . $project_id);
-        $content                = serialize($menu);
-        $paramePath             = \Env::get('APP_PATH') . 'common/parame/' . $filename.'.php';
-
-        //先删除原有的参数文件
-        if (file_exists($paramePath)) unlink($paramePath);
-
-        file_put_contents($paramePath,$content);
-
         //需要返回的数据体
-        $Data                   = ['id'=>$project_id];
+        $Data                   = ['TEST'];
 
         return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>$Data];
     }
 
-    /*api:cb115b3f0116f9cabf9c46503a23027d*/
+    /*api:269bf6a7f02ce2045af284e9bda57683*/
 
     /*接口扩展*/
 }

@@ -25,12 +25,12 @@ class Usergroup extends Base
     {
         parent::__construct();
 
-        $this->apiUrl['index']        = 'Admin/UserGroup/listData';
-        $this->apiUrl['edit']         = 'Admin/UserGroup/detailData';
-        $this->apiUrl['add_save']     = 'Admin/UserGroup/saveData';
-        $this->apiUrl['edit_save']    = 'Admin/UserGroup/saveData';
-        $this->apiUrl['quickedit']    = 'Admin/UserGroup/quickEditData';
-        $this->apiUrl['del']          = 'Admin/UserGroup/delData';
+        $this->apiUrl['index']        = 'api/UserGroup/listData';
+        $this->apiUrl['edit']         = 'api/UserGroup/detailData';
+        $this->apiUrl['add_save']     = 'api/UserGroup/saveData';
+        $this->apiUrl['edit_save']    = 'api/UserGroup/saveData';
+        $this->apiUrl['quickedit']    = 'api/UserGroup/quickEditData';
+        $this->apiUrl['del']          = 'api/UserGroup/delData';
     }
 
 	//列表页面
@@ -317,16 +317,13 @@ $this->error('未设置接口地址1');
         $parame['id']       = $id ;
 
         //请求地址
-        if (!isset($this->apiUrl['edit']) || empty($this->apiUrl['edit'])) {
-            
-            $this->error('未设置接口地址');
-        }
+        if (!isset($this->apiUrl['edit']) || empty($this->apiUrl['edit']))
+        $this->error('未设置接口地址');
 
         //接口调用
         $res                = $this->apiData($parame,$this->apiUrl['edit']) ;
         $info               = $res ? $this->getApiData() : $res;
-
-        $userAuth           = empty($info['rules'])?array() : explode(',',$info['rules']) ;
+        $userAuth           = empty($info['rules']) ? [] : explode(',',$info['rules']) ;
 
         /**获取所有的菜单权限*/
         $Tree                           = new \xnrcms\DataTree($this->menu);

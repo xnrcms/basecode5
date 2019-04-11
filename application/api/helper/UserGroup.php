@@ -10,7 +10,7 @@
  * Helper只要处理业务逻辑，默认会初始化数据列表接口、数据详情接口、数据更新接口、数据删除接口、数据快捷编辑接口
  * 如需其他接口自行扩展，默认接口如实在无需要可以自行删除
  */
-namespace app\admin\helper;
+namespace app\api\helper;
 
 use app\common\helper\Base;
 use think\facade\Lang;
@@ -33,9 +33,10 @@ class UserGroup extends Base
      * @param  [string] $methodName 方法名
      * @return [array]              接口输出数据
      */
-    public function apiRun()
+	public function apiRun()
     {   
         if (!$this->checkData($this->postData)) return json($this->getReturnData());
+
         //加载验证器
         $this->dataValidate = new \app\api\validate\DataValidate;
         
@@ -56,7 +57,7 @@ class UserGroup extends Base
     {
         return $this->$aName($parame);
     }
-    
+
     /**
      * 接口列表数据
      * @param  [array] $parame 接口参数
@@ -91,10 +92,10 @@ class UserGroup extends Base
 		$modelParame['whereFun']	= 'formatWhereDefault';
 
 		//排序定义
-		$modelParame['order']		= 'main.id desc';		
+		$modelParame['order']		= 'main.id desc';
 		
 		//数据分页步长定义
-		$modelParame['limit']		= $this->apidoc == 2 ? 1 : 10;
+		$modelParame['limit']		= isset($parame['limit']) ? $parame['limit'] : 10;
 
 		//数据分页页数定义
 		$modelParame['page']		= (isset($parame['page']) && $parame['page'] > 0) ? $parame['page'] : 1;
@@ -102,11 +103,18 @@ class UserGroup extends Base
 		//数据缓存是时间，默认0 不缓存 ,单位秒
 		$modelParame['cacheTime']	= 0;
 
-		//列表数据
-		$lists 						= $dbModel->getPageList($modelParame);
+        $ckey                       = md5(serialize($modelParame));
+        $ctag                       = 'user_group_list';
+        $data                       = $dbModel->getCache($ckey);
 
-		//数据格式化
-		$data 						= (isset($lists['lists']) && !empty($lists['lists'])) ? $lists['lists'] : [];
+        if (empty($data)) {
+            $lists                  = $dbModel->getPageList($modelParame);
+            $data                   = (isset($lists['lists']) && !empty($lists['lists'])) ? $lists['lists'] : [];
+
+            $dbModel->setCache($ckey,$data,$ctag);
+        }
+
+        $title      = $dbModel->getAllUserGorupTitle();
 
     	if (!empty($data)) {
 
@@ -148,11 +156,17 @@ class UserGroup extends Base
             return ['Code' => '700002', 'Msg'=>lang('700002')];
         }
 
+        $saveData                   = [];
+        //$saveData['parame']         = isset($parame['parame']) ? $parame['parame'] : '';
+
         //规避遗漏定义入库数据
         if (empty($saveData)) return ['Code' => '120021', 'Msg'=>lang('120021')];
 
+        //自行处理数据入库条件
+        //...
+		
         //通过ID判断数据是新增还是更新
-    	if ($id <= 0) {
+        if ($id <= 0) {
 
             //新增
             $saveData['create_time']                = time();
@@ -171,6 +185,8 @@ class UserGroup extends Base
 
         if (!empty($info)) {
 
+            $dbModel->clearCache(['ctag'=>'user_group_list']);
+
             return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>$info];
         }else{
 
@@ -188,7 +204,12 @@ class UserGroup extends Base
         //主表数据库模型
     	$dbModel			= model($this->mainTable);
 
-    	$info 				= $dbModel->getOneById($parame['id']);
+        //数据ID
+        $id                 = isset($parame['id']) ? intval($parame['id']) : 0;
+        if ($id <= 0) return ['Code' => '120023', 'Msg'=>lang('120023')];
+
+        //数据详情
+    	$info 				= $dbModel->getOneById($id);
 
     	if (!empty($info)) {
     		
@@ -215,11 +236,18 @@ class UserGroup extends Base
         //主表数据库模型
     	$dbModel			= model($this->mainTable);
 
-    	$info 				= $dbModel->updateById($parame['id'],[$parame['fieldName']=>$parame['updata']]);
+        //数据ID
+        $id                 = isset($parame['id']) ? intval($parame['id']) : 0;
+        if ($id <= 0) return ['Code' => '120023', 'Msg'=>lang('120023')];
+
+        //根据ID更新数据
+    	$info 				= $dbModel->updateById($id,[$parame['fieldName']=>$parame['updata']]);
 
     	if (!empty($info)) {
 
-    		return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>['id'=>$parame['id']]];
+            $dbModel->clearCache(['ctag'=>'user_group_list']);
+
+    		return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>['id'=>$id]];
     	}else{
 
     		return ['Code' => '100015', 'Msg'=>lang('100015')];
@@ -236,11 +264,17 @@ class UserGroup extends Base
         //主表数据库模型
     	$dbModel				= model($this->mainTable);
 
+        //数据ID
+        $id                 = isset($parame['id']) ? intval($parame['id']) : 0;
+        if ($id <= 0) return ['Code' => '120023', 'Msg'=>lang('120023')];
+
         //自行定义删除条件
         //...
         
         //执行删除操作
-    	$delCount				= $dbModel->delData($parame['id']);
+    	$delCount				= $dbModel->delData($id);
+
+        $dbModel->clearCache(['ctag'=>'user_group_list']);
 
     	return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>['count'=>$delCount]];
     }

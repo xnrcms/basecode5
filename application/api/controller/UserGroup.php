@@ -8,11 +8,11 @@
  * 不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  */
-namespace app\admin\controller;
+namespace app\api\controller;
 
 use app\common\controller\Base;
 
-class Region extends Base
+class UserGroup extends Base
 {
     //接口构造
     public function __construct(){

@@ -806,8 +806,8 @@ position: relative; z-index: 1; cursor: default; }
 .flexigrid .bDiv tr:first-child span.btn ul { bottom: auto; top: 0; }
 .flexigrid .bDiv tr:nth-last-child(2) span.btn ul { bottom: auto; top: 0; }
 .flexigrid .bDiv span.btn:hover ul { display: block; padding: 0 5px; }
-.flexigrid .bDiv span.btn ul li { border-bottom: dotted 1px #3aa8cf; clear: both; margin-bottom: -1px; }
-.flexigrid .bDiv span.btn ul li a { color: #FFF; display: block; line-height: 24px; text-align: right; height: 24px; padding: 0 5px; }
+.flexigrid .bDiv span.btn ul li { border-bottom: dotted 1px #3aa8cf; clear: both; margin-bottom: -2px; }
+.flexigrid .bDiv span.btn ul li a { color: #FFF; display: block; line-height: 22px; text-align: right; height: 22px; padding: 0 5px; }
 .flexigrid .bDiv span.btn ul li a:hover { text-decoration: underline; }
 .flexigrid .bDiv span.btn ul li a.expire { color: #FF0 !important; }
 .flexigrid .bDiv a.expired { color: #F30; }
@@ -835,8 +835,8 @@ i.fa-external-link { color: #999 !important; font-size: 9px !important; margin-l
 .flexigrid .hDiv .sign div,
 .flexigrid .bDiv .sign div { min-width: 24px !important; max-width: 24px !important; }
 .flexigrid .hDiv .handle div,
-.flexigrid .bDiv .handle div { overflow: visible; min-width: 150px !important; max-width: 174px !important; }
-.flexigrid .bDiv .handle1 div { overflow: visible; min-width: 10px !important; max-width: 174px !important; }
+.flexigrid .bDiv .handle div { overflow: visible; /*min-width: 150px !important;*/ max-width: 174px !important; }
+.flexigrid .bDiv .handle1 div { overflow: visible; /*min-width: 10px !important;*/ max-width: 174px !important; }
 .flexigrid .hDiv .handle-s div,
 .flexigrid .bDiv .handle-s div { overflow: visible; min-width: 60px !important; max-width: 60px !important; }
 .flexigrid.hideBody { height: 26px !important; border-bottom: 1px solid #ccc; }
