@@ -50,7 +50,7 @@ class {ControllerName} extends Base
         //参数定义
         $menuid     = isset($param['menuid']) ? $param['menuid'] : 0;
         $page       = isset($param['page']) ? $param['page'] : 1;
-        $search     = isset($param['search']) ? $param['search'] : [];
+        $search     = $this->getSearchParame($param);
         $isTree     = 0;
 
         //页面操作功能菜单

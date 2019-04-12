@@ -24,8 +24,11 @@ class UserCenter extends Base
 				foreach ($search as $key => $value) {
 
 					if (!empty($value) && (is_string($value) || is_numeric($value)) ) {
-
-						$model->where('main.'.$key,'eq',$value);
+                        if ($key == 'nickname') {
+                            $model->where('ud.'.$key,'eq',trim($value));
+                        }else{
+                           $model->where('main.'.$key,'eq',trim($value));
+                        }
 					}
 				}
 			}

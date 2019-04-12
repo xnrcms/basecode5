@@ -7,57 +7,35 @@
 {notempty name="listNode.search"}  
 <form class="navbar-form form-inline" id="searchForm" action="" method="post" onSubmit="return false;">
     <div class="sDiv">
-        <div class="sDiv2">
+        <div class="sDiv2" style="display: flex;align-items: center;">
             {volist name="listNode.search" id="vo"}
+            <span style="font-size: 12px;">{$vo.title}&nbsp;&nbsp;</span>
             {switch name="vo.type"}
                 {case string}{/*字符串类型*/}
-                    <input type="text" size="30" class="qsbox" name="search[{$vo.tag}]" placeholder="{$vo.title}" {$vo.attr}>
+                    <input type="text" size="30" class="qsbox" name="data_search_{$vo.tag}" {$vo.attr}>
                 {/case}
                 {case number}{/*数字类型*/}
-                    <input type="text" size="30" class="qsbox" name="search[{$vo.tag}]" placeholder="{$vo.title}" {$vo.attr}>
+                    <input type="text" size="30" class="qsbox" name="data_search_{$vo.tag}" {$vo.attr}>
                 </case>
                 {case price}{/*价格类型*/}
-                    <input type="text" size="30" class="qsbox" name="search[{$vo.tag}]" placeholder="{$vo.title}" {$vo.attr}>
+                    <input type="text" size="30" class="qsbox" name="data_search_{$vo.tag}" {$vo.attr}>
                 {/case}
 
                 {case select}{/*枚举类型*/}
-                <select name="search[{$vo.tag}]" class="select" {$vo.attr}>
+                <select name="data_search_{$vo.tag}" class="select" {$vo.attr}>
                     <option value="">请选择</option>
-                    {if condition="$vo['default']['type'] eq 'string'"}
-                        {volist name="vo.default.parame" id="pa"}
-                            <option value="{$key}" {if condition="$_fieldInfo.type eq $key"}selected{/if}>{$pa}</option>
-                        {/volist}
-                        {else /}
-                        {volist name="$vo.default.parame" id="pa"}
-                            <option value="{$key}" {if condition="$_fieldInfo.type eq $key"}selected{/if}>{$pa}</option>
-                        {/volist}
-                    {/if}
+                    {volist name="vo.default.parame" id="pa"}
+                    <option value="{$key}">{$pa}</option>
+                    {/volist}
                 </select>
                 {/case}
                 {case bool}{/*布尔类型*/}
-                <div class="onoff" style="display: inline-block">
-                    {if condition="$vo['default']['type'] eq 'string'"}
-                    {volist name="vo.default.parame" id="bo"}
-                    {if condition="$i eq 1"}
-                        <label for="menu_{$form.tag}{$i}" class="cb-enable {if condition="$list[$vo['tag']] eq $key"}selected{/if}">{$bo}</label>
-                        <input id="menu_{$form.tag}{$i}" name="search[{$vo.tag}]" value="{$key}" type="radio" {if condition="$list[$vo['tag']] eq $key"} checked="checked"{/if}>
-                    {else /}
-                        <label for="menu_{$form.tag}{$i}" class="cb-disable {if condition="$list[$vo['tag']] eq $key"}selected{/if}">{$bo}</label>
-                        <input id="menu_{$form.tag}{$i}" name="search[{$vo.tag}]" value="{$key}" type="radio" {if condition="$list[$vo['tag']] eq $key"} checked="checked"{/if}>
-                    {/if}
+                <select name="data_search_{$vo.tag}" class="select" {$vo.attr}>
+                    <option value="">请选择</option>
+                    {volist name="vo.default.parame" id="pa"}
+                    <option value="{$key}">{$pa}</option>
                     {/volist}
-                    {else /}
-                        {volist name="vo.default.parame" id="bo"}
-                            {if condition="$i eq 1"}
-                                <label for="menu_{$form.tag}{$i}" class="cb-enable {if condition="$list[$vo['tag']] eq $key1"}selected{/if}">{$bo}</label>
-                                <input id="menu_{$form.tag}{$i}" name="search[{$vo.tag}]" value="{$key}" type="radio" {if condition="$list[$vo['tag']] eq $key"} checked="checked"{/if}>
-                            {else /}
-                                <label for="menu_{$form.tag}{$i}" class="cb-disable {if condition="$list[$vo['tag']] eq $key"}selected{/if}">{$bo}</label>
-                                <input id="menu_{$form.tag}{$i}" name="search[{$vo.tag}]" value="{$key}" type="radio" {if condition="$list[$vo['tag']] eq $key"} checked="checked"{/if}>
-                            {/if}
-                        {/volist}
-                    {/if}
-                </div>
+                </select>
                 {/case}
                 {default /}
             {/switch}

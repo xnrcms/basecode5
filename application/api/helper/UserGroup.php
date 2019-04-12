@@ -279,5 +279,38 @@ class UserGroup extends Base
     	return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>['count'=>$delCount]];
     }
 
+    /*api:5d336bd00991bd597d9cd8a913e33b81*/
+    /**
+     * * 获取用户组列表（用户组设置）
+     * @param  [array] $parame 接口参数
+     * @return [array]         接口输出数据
+     */
+    private function glistData($parame)
+    {
+        //主表数据库模型
+        $dbModel                = model($this->mainTable);
+
+        //自行书写业务逻辑代码
+        $lists                  = $dbModel->getAllUserGorupTitle();
+        $gaccess                = model('user_group_access')->getUserGroupAccessListByUid($parame['id']);
+
+        if (!empty($lists)) {
+            foreach ($lists as $key => $value) {
+                if (in_array($value['id'], $gaccess)) {
+                    $lists[$key]['selected']    = 1;
+                }else{
+                    $lists[$key]['selected']    = 0;
+                }
+            }
+        }
+
+        //需要返回的数据体
+        $Data                   = !empty($lists) ? $lists : [];
+
+        return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>$lists];
+    }
+
+    /*api:5d336bd00991bd597d9cd8a913e33b81*/
+
     /*接口扩展*/
 }

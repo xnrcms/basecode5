@@ -4,8 +4,18 @@
   {include file="Public/List/notice" /}
   <form action="{:url('','menuid='.$menuid)}" method="post" class="form-horizontal" id="submit_form_data">
     <div class="ncap-form-default">
-      <div class="bot" style="padding:0px;padding-left: 10px;">
-        <a id="submitBtn" class="ncap-btn-big ncap-btn-green" href="JavaScript:void(0);" onClick="$('#submit_form_data').submit();">确认提交</a></div>
+        <div class="bot" style="padding:0px;padding-left: 10px;">
+            <a id="submitBtn" class="ncap-btn-big ncap-btn-green" href="JavaScript:void(0);" onClick="$('#submit_form_data').submit();">确认提交</a>
+        </div>
+        {notempty name="glist"}
+        <div style="margin-top: 10px;margin-left: 20px;">
+        {volist name="glist" id="gvo"}
+            <input type="checkbox" id="lable_group_{$gvo.id}" name="group_id[]" class="all-check" value="{$gvo.id}" {if condition="$gvo.selected eq 1"}checked{/if}>
+            <span><label for="lable_group_{$gvo.id}">{$gvo.title}</label></span>
+        {/volist}
+        </div>
+        {/notempty}
+
         {include file="public/expand/rules" /}
     </div>
   </form>

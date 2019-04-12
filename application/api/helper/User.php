@@ -18,7 +18,7 @@ use think\facade\Lang;
 class User extends Base
 {
 	private $dataValidate 		= null;
-    private $mainTable          = 'user_detail';
+    private $mainTable          = 'user_center';
 	
 	public function __construct($parame=[],$className='',$methodName='',$modelName='')
     {
@@ -69,20 +69,20 @@ class User extends Base
 
 		/*定义数据模型参数*/
 		//主表名称，可以为空，默认当前模型名称
-		$modelParame['MainTab']		= 'user_group_access';
+		$modelParame['MainTab']		= 'user_center';
 
 		//主表名称，可以为空，默认为main
 		$modelParame['MainAlias']	= 'main';
 
 		//主表待查询字段，可以为空，默认全字段
-		$modelParame['MainField']	= ['uid as ugauid'];
+		$modelParame['MainField']	= ['id','username','email','mobile','status','reg_ip','create_time'];
 
 		//定义关联查询表信息，默认是空数组，为空时为单表查询,格式必须为一下格式
 		//Rtype :`INNER`、`LEFT`、`RIGHT`、`FULL`，不区分大小写，默认为`INNER`。
 		$RelationTab				= [];
-        $RelationTab['user_center']            = ['Ralias'=>'uc','Ron'=>'uc.id=main.uid','Rtype'=>'LEFT','Rfield'=>['id','username','email','mobile','status','reg_ip','create_time']];
-		$RelationTab['user_detail']	           = ['Ralias'=>'ud','Ron'=>'ud.uid=uc.id','Rtype'=>'LEFT','Rfield'=>['nickname','face']];
-        /*$RelationTab['user_group']             = ['Ralias'=>'ug','Ron'=>'ug.id=main.group_id','Rtype'=>'LEFT','Rfield'=>['title as gtitle']];*/
+        $RelationTab['user_detail'] = [
+            'Ralias'=>'ud','Ron'=>'ud.uid=main.id','Rtype'=>'LEFT','Rfield'=>['uid as ugauid','nickname','face']
+        ];
 
 		$modelParame['RelationTab']	= $RelationTab;
 
@@ -93,7 +93,7 @@ class User extends Base
 		$modelParame['whereFun']	= 'formatWhereDefault';
 
 		//排序定义
-		$modelParame['order']		= 'main.uid desc';		
+		$modelParame['order']		= 'main.id desc';
 		
 		//数据分页步长定义
 		$modelParame['limit']		= $this->apidoc == 2 ? 1 : 10;
@@ -109,6 +109,12 @@ class User extends Base
 
 		//数据格式化
 		$data 						= (isset($lists['lists']) && !empty($lists['lists'])) ? $lists['lists'] : [];
+
+        if (!empty($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key]['gtitle']   = $this->getUserGroupTitle($value['id']);
+            }
+        }
 
     	$lists['lists'] 			= $data;
 
@@ -284,7 +290,7 @@ class User extends Base
             //极光ID
             if (isset($parame['jpushid']) && !empty($parame['jpushid'])) {
                 $userModel   = model('user_detail');
-                $userinfo    = $userModel->getOneByUid($uid);
+                $userinfo    = $userModel->getOneById($uid);
                 $userModel->updateById($userinfo['id'],['jpushid'=>$parame['jpushid']]);
                 $userModel->delDetailDataCacheByUid($uid);
             }
@@ -312,8 +318,8 @@ class User extends Base
         $dbModel                = model($this->mainTable);
 
         //自行书写业务逻辑代码
-        $ucUserInfo             = model('user_center')->getOneById($parame['id']);
-        $userDetail             = $dbModel->getOneByUid($parame['id']);
+        $ucUserInfo             = $dbModel->getOneById($parame['id']);
+        $userDetail             = model('user_detail')->getOneById($parame['id']);
 
         if (empty($ucUserInfo))  return ['Code' => '200004', 'Msg'=>lang('200004')];
         $ucUserInfo             = $ucUserInfo->toArray();
@@ -349,9 +355,6 @@ class User extends Base
         $Data['status']                   = $ucUserInfo['status'];
         $Data['detail_id']                = $userDetail['id'];
         $Data['lottery_id']               = $userDetail['lottery_id'];
-
-        $user_level                       = getUserLevel($userDetail['account_all']);
-        $Data['user_level']               = $user_level[0];
 
         $groupInfo                        = $this->getGroupRules($Data);
 
@@ -410,7 +413,7 @@ class User extends Base
         if (!empty($invitation_code))
         {   
             $iuid       = get_invitation_uid($invitation_code);
-            if (empty(model('user_center')->getOneByid($iuid)))
+            if (empty(model('user_center')->getOneById($iuid)))
             return ['Code' => '200034', 'Msg'=>lang('200034')];
         }
         
@@ -477,15 +480,13 @@ class User extends Base
 
         //定义可以快速修改的字段信息
         $allow            = ['nickname','sex'];
+
         if (!in_array($parame['fieldName'],$allow))
         return ['Code' => '120025', 'Msg'=>lang('120025',[$parame['fieldName']])];
 
-        $info             = $dbModel->updateById($parame['id'],[$parame['fieldName']=>$parame['updata']]);
+        $info             = $dbModel->updateById($parame['id'],[$parame['fieldName']=>$parame['updata'],'update_time'=>time()]);
 
         if (!empty($info)) {
-
-            //删除缓存
-            model($this->mainTable)->delDetailDataCacheByUid($info->getAttr('uid'));
 
             return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>['id'=>$parame['id']]];
         }else{
@@ -517,7 +518,7 @@ class User extends Base
         if ($sex > 0)           $updata['sex']          = $sex;
 
         if (!empty($updata)) {
-            $userDetail       = $dbModel->getOneByUid($parame['uid']);
+            $userDetail       = $dbModel->getOneById($parame['uid']);
             $info             = $dbModel->updateById($userDetail['id'],$updata);
             $dbModel->delDetailDataCacheByUid($userDetail['uid']);
         }
@@ -704,6 +705,32 @@ class User extends Base
 
     /*api:e6e7456ef699ba5cab2a332d6217f2fa*/
 
+    /*api:ba629fe42524433e1728de3cac2327cd*/
+    /**
+     * * 用户独立权限设置
+     * @param  [array] $parame 接口参数
+     * @return [array]         接口输出数据
+     */
+    private function setUserPrivilege($parame)
+    {
+        //主表数据库模型
+        $dbModel                = model($this->mainTable);
+
+        //自行书写业务逻辑代码
+        $menu_id                = isset($parame['menu_id']) ? $parame['menu_id'] : '';
+        $group_id               = isset($parame['group_id']) ? explode(',', $parame['group_id']) : [];
+
+        model('user_detail')->updateById($parame['id'],['rules'=>$menu_id,'update_time'=>time()]);
+        model('user_group_access')->setGroupAccess($parame['id'],$group_id);
+    
+        //需要返回的数据体
+        $Data                   = ['id'=>$parame['id']];
+
+        return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>$Data];
+    }
+
+    /*api:ba629fe42524433e1728de3cac2327cd*/
+
     /*接口扩展*/
 
     /**
@@ -806,5 +833,26 @@ class User extends Base
             case -17: return ['Code' => '200038', 'Msg'=>lang('200038')];
             default: return ['Code' => '200007', 'Msg'=>lang('200007')];
         }
+    }
+
+    private function getUserGroupTitle($uid = 0)
+    {
+        $lists                  = model('user_group')->getAllUserGorupTitle();
+        $gaccess                = model('user_group_access')->getUserGroupAccessListByUid($uid);
+        $gtitle                 = [];
+
+        if ($uid === 1) {
+            $gtitle[]           = '超级管理员';
+        }
+
+        if (!empty($lists)) {
+            foreach ($lists as $key => $value) {
+                if (in_array($value['id'], $gaccess)) {
+                    $gtitle[]       = $value['title'];
+                }
+            }
+        }
+
+        return !empty($gtitle) ? implode(',', $gtitle) : '未分组';
     }
 }

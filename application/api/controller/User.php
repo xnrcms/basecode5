@@ -211,5 +211,20 @@ class User extends Base
 
     /*api:e6e7456ef699ba5cab2a332d6217f2fa*/
 
+    /*api:ba629fe42524433e1728de3cac2327cd*/
+    /**
+     * 用户独立权限设置
+     * @access public
+     * @param  [array] $parame 扩展参数
+     * @return [json]          接口数据输出
+    */
+    public function setUserPrivilege($parame = []){
+
+        //执行接口调用
+        return $this->execApi($parame);
+    }
+
+    /*api:ba629fe42524433e1728de3cac2327cd*/
+
     /*接口扩展*/
 }

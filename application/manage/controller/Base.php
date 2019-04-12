@@ -601,6 +601,20 @@ class Base extends Controller
         $this->assign($assignData);
     }
 
+    public function getSearchParame($param = [])
+    {
+        $search             = [];
+        if (!empty($param)) {
+            foreach ($param as $key => $value) {
+                if (strpos('#'.$key, 'data_search_') === 1) {
+                    $search[str_replace('data_search_', '', $key)]   = $value;
+                }
+            }
+        }
+
+        return $search;
+    }
+
     /**
      * 扩展枚举，布尔，单选，复选等数据选项数据
      * @return array 默认数据

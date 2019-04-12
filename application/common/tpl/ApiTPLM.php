@@ -33,7 +33,7 @@ class {ModelNameTPL} extends Base
 
               if (!empty($value) && (is_string($value) || is_numeric($value)) ) {
 
-                $model->where('main.'.$key,'eq',$value);
+                $model->where('main.'.$key,'eq',trim($value));
               }
             }
           }

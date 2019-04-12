@@ -24,7 +24,7 @@ class User extends Base
     public function __construct()
     {
         parent::__construct();
-
+        $this->tpl                                  = new \xnrcms\DevTpl();
         $this->apiUrl['index']                      = 'Api/User/listData';
         $this->apiUrl['edit']                       = 'Api/User/userDetail';
         $this->apiUrl['add_save']                   = 'Api/User/saveData';
@@ -32,6 +32,7 @@ class User extends Base
         $this->apiUrl['quickedit']                  = 'Api/User/quickEditData';
         $this->apiUrl['del']                        = 'Api/User/delData';
         $this->apiUrl['quickEditUserDetailData']    = 'Api/User/quickEditUserDetailData';
+        $this->apiUrl['setUserPrivilege']           = 'Api/User/setUserPrivilege';
     }
 
     //所有用户，不按用户组划分
@@ -42,7 +43,7 @@ class User extends Base
         $arr['isback']             = 0;
         $arr['title1']             = '用户-用户管理';
         $arr['title2']             = '网站系统用户-用户索引与管理';
-        $arr['notice']             = ['用户-用户列表管理, 对系统管理员进行维护.'];
+        $arr['notice']             = ['用户-用户列表管理, 对系统用户进行维护.'];
 
         return $this->index($arr);
     }
@@ -89,16 +90,25 @@ class User extends Base
 	//列表页面
 	private function index($arr)
     {
-		$menuid     = input('menuid',0) ;
-		$search 	= input('search',[]);
-        $page       = input('page',1);
+        //参数数据接收
+        $param      = request()->param();
+
+        //初始化模板
+        $tag        = $arr['listid']; //默认当前路由为唯一标识，自己可以自定义标识
+        $tpl_title  = '会员列表'; //初始化列表模板的名称，为空时不初始化
+        $tplid      = $this->tpl->initTplData(get_devtpl_tag($tag),$tpl_title,0);
+        $listNode   = $this->tpl->showTpl($tplid);
+        $listId     = isset($listNode['info']['id']) ? intval($listNode['info']['id']) : 0;
+
+        //参数定义
+        $menuid     = isset($param['menuid']) ? $param['menuid'] : 0;
+        $page       = isset($param['page']) ? $param['page'] : 1;
+        $search     = $this->getSearchParame($param);
+        $isTree     = 0;
 
         //页面操作功能菜单
         $topMenu    = formatMenuByPidAndPos($menuid,2, $this->menu);
         $rightMenu  = formatMenuByPidAndPos($menuid,3, $this->menu);
-
-        //获取表头以及搜索数据
-        $listNode   = $this->getListNote($arr['listid']) ;
 
         $search['group_id'] = $arr['gid'];
 
@@ -144,11 +154,12 @@ class User extends Base
         $pageData['notice']             = $arr['notice'];
 
         //渲染数据到页面模板上
+        $assignData['isTree']           = $isTree;
         $assignData['_page']            = $p;
         $assignData['_total']           = $total;
         $assignData['topMenu']          = $topMenu;
         $assignData['rightMenu']        = $rightMenu;
-        $assignData['listId']           = isset($listNode['info']['id']) ? intval($listNode['info']['id']) : 0;
+        $assignData['listId']           = $listId;
         $assignData['listNode']         = $listNode;
         $assignData['listData']         = $listData;
         $assignData['pageData']         = $pageData;
@@ -350,23 +361,34 @@ class User extends Base
     }
 
     //用户授权
-    public function auth(){
-
+    public function setUserPrivilege()
+    {
         if(request()->isPost())
         {
-            $postData       = input('post.');
-            $detail_id      = isset($postData['detail_id']) ? intval($postData['detail_id']) : 0;
-            $value          = isset($postData['rules']) ? $postData['rules'] : [];
-            if ($detail_id <= 0) $this->error('更新失败！');
+            $apiTag         = 'setUserPrivilege';
+            //请求地址
+            if (!isset($this->apiUrl[$apiTag]) || empty($this->apiUrl[$apiTag]))
+            $this->error('未设置接口地址');
+
+            //参数数据接收
+            $param          = request()->param();
+            $id             = isset($param['id']) ? intval($param['id']) : 0;
+            $menu_id        = isset($param['rules']) ? $param['rules'] : [];
+            $group_id       = isset($param['group_id']) ? $param['group_id'] : [];
+            
+            if ($id <= 0) $this->error('更新失败！');
+
+            $menu_id                = !empty($menu_id) ? implode(',',$menu_id) : '-1';
+            $group_id               = !empty($group_id) ? implode(',',$group_id) : '-1';
 
             $parame                 = [];
             $parame['uid']          = $this->uid;
             $parame['hashid']       = $this->hashid;
-            $parame['id']           = $detail_id;
-            $parame['fieldName']    = 'rules';
-            $parame['updata']       = !empty($value) ? implode(',',$value) : '-1';
+            $parame['id']           = $id;
+            $parame['group_id']     = $group_id;
+            $parame['menu_id']      = $menu_id;
 
-            $res                    = $this->apiData($parame,$this->apiUrl['quickEditUserDetailData']);
+            $res                    = $this->apiData($parame,$this->apiUrl[$apiTag]);
 
             $res ? $this->success('授权成功',Cookie('__forward__')) : $this->error($this->getApiError());
         }
@@ -375,12 +397,14 @@ class User extends Base
         if (!isset($this->apiUrl['edit']) || empty($this->apiUrl['edit'])) $this->error('未设置接口地址');
 
         //请求参数
-        $parame['uid']      = input('id');
-        $parame['hashid']   = input('hashid');
+        $parame             = [];
+        $parame['uid']      = $this->uid;
+        $parame['hashid']   = $this->hashid;
+        $parame['id']       = input('id');
 
         //接口调用
         $res                = $this->apiData($parame,$this->apiUrl['edit']) ;
-        $info               = $res ? $this->getApiData() : $res;
+        $info               = $res ? $this->getApiData() : [];
 
         $userAuth           = empty($info['urules']) ? array() : explode(',',$info['urules']) ;
 
@@ -408,6 +432,14 @@ class User extends Base
             }
         }
 
+        //用户组列表 接口调用
+        $parame                 = [];
+        $parame['uid']          = $this->uid;
+        $parame['hashid']       = $this->hashid;
+        $parame['id']           = input('id');
+        $res                    = $this->apiData($parame,'api/UserGroup/glistData') ;
+        $glist                  = $res ? $this->getApiData() : [];
+
         //页面头信息设置
         $pageData['isback']     = 1;
         $pageData['title1']     = '权限';
@@ -418,6 +450,7 @@ class User extends Base
         $assignData['authList']         = $authList;
         $assignData['userAuth']         = $userAuth;
         $assignData['info']             = $info;
+        $assignData['glist']            = $glist;
         $assignData['pageData']         = $pageData;
         $this->assignData($assignData);
 

@@ -793,39 +793,6 @@ if(!function_exists('getSignature'))
 	}
 }
 
-if(!function_exists('getUserLevel'))
-{	
-	/**
-	 * @Author :xnrcms<562909771@qq.com>
-	 * @date：2018/6/2 14:22
-	 * @description：格式化用户等级
-	 */
-	function getUserLevel($money=0)
-	{
-		$config 		= config('system_config.');
-		$user_level 	= $config['user_level'];
-		$user_level 	= explode("\n",$user_level);
-		$level 			= [0,0,0];
-		$ll 			= [];
-		if (!empty($user_level)) {
-			foreach ($user_level as $key => $value) {
-				$vv 	= explode('=',$value);
-				$ll[] 	= $vv;
-			}
-		}
-
-		$nn 		= count($ll);
-		$ll[$nn] 	= ['L9',1,999999999];
-		for ($i=0; $i < $nn; $i++) {
-			if ($money*1 >= (int)$ll[$i][2] && $money*1 < (int)$ll[$i+1][2]) {
-				$level 			= [$i,$ll[$i][1],$ll[$i][2]];
-			}
-		}
-
-		return $level;
-	}
-}
-
 if(!function_exists('getDistributionLevel'))
 {	
 	/**

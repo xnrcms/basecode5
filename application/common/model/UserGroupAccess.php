@@ -51,27 +51,52 @@ class UserGroupAccess extends Base
     {
       if (empty($uid))  return [];
 
-      $lists      = $this->where('uid','=',$uid)->field('uid,group_id')->select()->toArray();
+      $ckey                       = 'getUserGroupAccessListByUid='.$uid;
+      $data                       = $this->getCache($ckey);
 
-      $gid        = [];
-      if (!empty($lists)) {
-        
-        foreach ($lists as $key => $value) {
-          
-          $gid[$value['group_id']]  = $value['group_id'];
-        }
+      if (empty($data)){
 
-        sort($gid);
+          $lists                  = $this->where('uid','=',$uid)->field('uid,group_id')->select()->toArray();
+          $data                   = [];
+
+          if (!empty($lists)) {
+            
+            foreach ($lists as $key => $value) {
+              
+              $data[$value['group_id']]  = $value['group_id'];
+            }
+
+            sort($data);
+          }
+
+          $this->setCache($ckey,$data);
       }
 
-      return $gid;
+      return $data;
+    }
+
+    public function setGroupAccess($uid = 0,$gid = [])
+    {
+      if ($uid <= 0)  return false;
+
+      $this->where('uid','=',$uid)->delete();
+      $this->clearCache(['ckey'=>'getUserGroupAccessListByUid='.$uid]);
+
+      if (!empty($gid)) {
+        $gdata    = [];
+        foreach ($gid as $key => $value) {
+          $gdata[]  = ['uid'=>$uid,'group_id'=>$value];
+        }
+
+        $this->saveAll($gdata);
+      }
     }
 
     public function saveData($uid = 0,$gid = 0)
     {
       if ($uid > 0 && $gid > 0) {
-        $info  = $this->where('uid','=',$uid)->value('uid');
-        $data = ['uid'=>$uid,'group_id'=>$gid];
+        $info     = $this->where('uid','=',$uid)->value('uid');
+        $data     = ['uid'=>$uid,'group_id'=>$gid];
 
         if ($info) {
 
@@ -80,6 +105,8 @@ class UserGroupAccess extends Base
 
           $this->allowField(true)->save($data);
         }
+
+        $this->clearCache(['ckey'=>'getUserGroupAccessListByUid']);
       }
 
       return false;
