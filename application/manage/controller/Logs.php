@@ -25,8 +25,8 @@ class Logs extends Base
     {
         parent::__construct();
 
-        $this->apiUrl['done_logs']        = 'Admin/Logs/listData';
-        $this->apiUrl['clear_logs']       = 'Admin/Logs/clearLogs';
+        $this->apiUrl['done_logs']        = 'api/Logs/listData';
+        $this->apiUrl['clear_logs']       = 'api/Logs/clearLogs';
     }
     public function done_logs()
     {

@@ -18,7 +18,7 @@ use think\facade\Lang;
 class Logs extends Base
 {
 	private $dataValidate 		= null;
-    private $mainTable          = '';
+    private $mainTable          = 'logs';
 	
 	public function __construct($parame=[],$className='',$methodName='',$modelName='')
     {
@@ -257,11 +257,10 @@ class Logs extends Base
         $dbModel                = model($this->mainTable);
 
         //自行书写业务逻辑代码
+        $clearCount             = $dbModel->clearData($parame);
 
         //需要返回的数据体
-        $Data                   = ['TEST'];
-
-        return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>$Data];
+        return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>['count'=>$clearCount]];
     }
 
     /*api:269bf6a7f02ce2045af284e9bda57683*/

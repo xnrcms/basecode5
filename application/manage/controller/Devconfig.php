@@ -28,8 +28,8 @@ class Devconfig extends Base
         parent::__construct();
 
         $this->tpl                      = new \xnrcms\DevTpl();
-        $this->apiUrl['config_list']    = 'Admin/Config/detailData';
-        $this->apiUrl['config_save']    = 'Admin/Config/saveData';
+        $this->apiUrl['config_list']    = 'api/Config/detailData';
+        $this->apiUrl['config_save']    = 'api/Config/saveData';
     }
 
     //开发设置
