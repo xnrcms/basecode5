@@ -280,7 +280,7 @@ class Devmenu extends Base
 
         //自行书写业务逻辑代码
 
-        $project_id             = 1;
+        $project_id             = 0;
         $menu                   = $dbModel->getReleaseMenu(['project_id'=>$project_id]);
 
         $filename               = 'menu'. md5('menu.data.project_id=' . $project_id);

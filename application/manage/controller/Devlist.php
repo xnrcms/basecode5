@@ -503,7 +503,7 @@ class Devlist extends Base
 			$parame['pid']		= $pid;
 			$parame['config']	= $config;
 			$parame['width']	= $width;
-
+			wr($parame);
 	        //请求数据
 	        $res       			= $this->apiData($parame,$this->apiUrl['edit_save']) ;
 	        $devlist   			= $this->getApiData() ;

@@ -43,7 +43,9 @@
                 <td width="12%">
                   <div style="text-align: center;">
                     <input type="text" size="30" class="qsbox" name="width_{$vo.id}" placeholder="请输入表头宽度" value="{$vo.width}" style="width: 90%">
-                    {php}$allwidth += $vo['width'];{/php}
+                    {php}
+                    if($vo['status'] == 1) $allwidth += $vo['width'];
+                    {/php}
                   </div>
                 </td>
 
@@ -67,7 +69,7 @@
                 <td width="12%">
                   <div style="text-align: center;">
                     <label>
-                      <input type="checkbox" class="checkbox_item" name="edit_{$vo.id}" value="1" {if condition="$vo['config']['edit'] eq 1"}checked{/if} > 可编辑
+                      <input type="checkbox" class="checkbox_item" name="edit_{$vo.id}" value="1" {if condition="$vo['config']['edit'] eq 1"}checked{/if}> 可编辑
                     </label>
                     <label>
                       <input type="checkbox" class="checkbox_item" name="search_{$vo.id}" value="1" {if condition="$vo['config']['search'] eq 1"}checked{/if}> 可搜索
@@ -83,8 +85,8 @@
 
                 <td width="12%">
                   <div class="onoff" style="text-align: center;">
-                    <input id="menu_status1_{$vo.id}" name="status_{$vo.id}" value="1" type="radio" checked="checked" >
-                    <input id="menu_status0_{$vo.id}" name="status_{$vo.id}" value="2" type="radio" >
+                    <input id="menu_status1_{$vo.id}" name="status_{$vo.id}" value="1" type="radio" {if condition="$vo.status eq 1"}checked{/if}>
+                    <input id="menu_status0_{$vo.id}" name="status_{$vo.id}" value="2" type="radio" {if condition="$vo.status eq 2"}checked{/if}>
                     <label for="menu_status1_{$vo.id}" class="cb-enable {if condition="$vo.status eq 1"}selected{/if}">启用</label>
                     <label for="menu_status0_{$vo.id}" class="cb-disable {if condition="$vo.status eq 2"}selected{/if}">禁用</label>
                   </div>

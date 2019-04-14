@@ -272,11 +272,9 @@ class Devapi extends Base
             $mName          = $apiUrl[0];
             $cName          = $apiUrl[1];
             $aName          = $apiUrl[2];
-
-            //if (in_array($aName,$this->defaultAction)) return ['Code' => '200006', 'Msg'=>lang('200006')];
-
-            $methodCode     = md5('apiCode'.$apiid);
             $apppath        = \Env::get('APP_PATH');
+
+            /*$methodCode     = md5('apiCode'.$apiid);
             $cpath          = $apppath.strtolower($mName).'/controller/'.formatStringToHump($cName).'.php';
             if (file_exists($cpath)){
                 $controllerContent      = file_get_contents($cpath);
@@ -291,7 +289,7 @@ class Devapi extends Base
                 $fileContent            = preg_replace("/\/\*api:".$methodCode."\*\/(.*)\/\*api:".$methodCode."\*\//Usi","",$controllerContent);
 
                 file_put_contents($hpath,$fileContent);
-            }
+            }*/
 
             //先删除原有的参数文件
             $apiCode       = md5(strtolower($mName.formatStringToHump($cName).$aName));
@@ -300,8 +298,11 @@ class Devapi extends Base
 
             //执行删除操作
             $delCount               = $dbModel->delData($id);
+            
+            //删除接口参数
+            model('devapi_parame')->delParameByApiId($id);
 
-            return ['Code' => '0000001', 'Msg'=>lang('000000'),'Data'=>['count'=>$delCount]];
+            return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>['count'=>$delCount]];
         }
 
         //接口不存在

@@ -53,4 +53,11 @@ class DevapiParame extends Base
       $list   = $this->where('api_id','in',$apiids)->select();
       return !empty($list) ? $list->toArray() : [];
     }
+
+    public function delParameByApiId($api_id = 0)
+    {
+      if ((int)$api_id > 0) {
+        $this->where('api_id','=',(int)$api_id)->delete();
+      }
+    }
 }
