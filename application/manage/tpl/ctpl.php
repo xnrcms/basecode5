@@ -26,12 +26,12 @@ class {ControllerName} extends Base
     {
         parent::__construct();
         $this->tpl                    = new \xnrcms\DevTpl();
-        $this->apiUrl['index']        = 'Admin/{ApiName}/listData';
-        $this->apiUrl['edit']         = 'Admin/{ApiName}/detailData';
-        $this->apiUrl['add_save']     = 'Admin/{ApiName}/saveData';
-        $this->apiUrl['edit_save']    = 'Admin/{ApiName}/saveData';
-        $this->apiUrl['quickedit']    = 'Admin/{ApiName}/quickEditData';
-        $this->apiUrl['del']          = 'Admin/{ApiName}/delData';
+        $this->apiUrl['index']        = 'admin/{ApiName}/listData';
+        $this->apiUrl['edit']         = 'admin/{ApiName}/detailData';
+        $this->apiUrl['add_save']     = 'admin/{ApiName}/saveData';
+        $this->apiUrl['edit_save']    = 'admin/{ApiName}/saveData';
+        $this->apiUrl['quickedit']    = 'admin/{ApiName}/quickEditData';
+        $this->apiUrl['del']          = 'admin/{ApiName}/delData';
     }
 
 	//列表页面

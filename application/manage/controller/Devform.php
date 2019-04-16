@@ -28,12 +28,12 @@ class Devform extends Base
     {
         parent::__construct();
 
-        $this->apiUrl['index']        = 'Admin/Devform/listData';
-        $this->apiUrl['edit']         = 'Admin/Devform/detailData';
-        $this->apiUrl['add_save']     = 'Admin/Devform/saveData';
-        $this->apiUrl['edit_save']    = 'Admin/Devform/saveData';
-        $this->apiUrl['quickedit']    = 'Admin/Devform/quickEditData';
-        $this->apiUrl['del']          = 'Admin/Devform/delData';
+        $this->apiUrl['index']        = 'admin/Devform/listData';
+        $this->apiUrl['edit']         = 'admin/Devform/detailData';
+        $this->apiUrl['add_save']     = 'admin/Devform/saveData';
+        $this->apiUrl['edit_save']    = 'admin/Devform/saveData';
+        $this->apiUrl['quickedit']    = 'admin/Devform/quickEditData';
+        $this->apiUrl['del']          = 'admin/Devform/delData';
     }
 
 	/**
@@ -364,7 +364,7 @@ class Devform extends Base
 					}
 				}
 
-				cache(md5("Admin/Devform/detailData".$value['id']),$value);
+				cache(md5("admin/Devform/detailData".$value['id']),$value);
 			}
 		}
 
@@ -400,7 +400,7 @@ class Devform extends Base
 	        $config 			= [];
 
 	        if ($id > 0 ) {
-	        	$info 				= cache(md5("Admin/Devform/detailData".$id));
+	        	$info 				= cache(md5("admin/Devform/detailData".$id));
 
 	        	if (empty($info) ) $this->error('表单模板数据不存在');
 
@@ -493,7 +493,7 @@ class Devform extends Base
 					}
 				}
 
-				cache(md5("Admin/Devform/detailData".$value['id']),$value);
+				cache(md5("admin/Devform/detailData".$value['id']),$value);
 			}
 		}
 
@@ -527,7 +527,7 @@ class Devform extends Base
 	        $parame['formid']		= intval(input('formId'));
 	        $parame['cloneData']	= json_encode($clone);
 
-	        $res 					= $this->apiData($parame,'Admin/Devform/saveClone');
+	        $res 					= $this->apiData($parame,'admin/Devform/saveClone');
 	        if($res){
 
 				$this->success( '克隆成功', Cookie('__forward__'));

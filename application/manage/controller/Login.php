@@ -36,7 +36,7 @@ class Login extends Controller
 			$parame['login_type'] 	= '1,3';
 			$parame['jpushid'] 		= '';
 
-			$requestRes 			= apiReq($parame,'Api/User/passwordLogin');
+			$requestRes 			= apiReq($parame,'api/User/passwordLogin');
 
 			$backData 				= !empty($requestRes[0]) ? $requestRes[0] : [];
 			$errorInfo				= !empty($requestRes[1]) ? $requestRes[1] : [];

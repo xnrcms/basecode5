@@ -79,13 +79,13 @@ class Index extends Base
 		$parame['uid']      = $this->uid;
         $parame['hashid']   = $this->hashid;
         //请求数据
-        $res 				= $this->apiData($parame,'Api/Sys/clearCache');
+        $res 				= $this->apiData($parame,'api/Sys/clearCache');
 
         $data 			    = $this->getApiData() ;
 
         if ($res) {
 
-        	$this->success("清理完成!!!",url('Admin/Admin/index'));
+        	$this->success("清理完成!!!" . url('admin/admin/index'),url('admin/admin/index'));
         }
         else{
 

@@ -29,9 +29,9 @@ class Uploadfile extends Base
     {
         parent::__construct();
 
-        $this->apiUrl['index']                 = 'Admin/Upload/listData';
-        $this->apiUrl['delfile']               = 'Admin/Upload/delData';
-        $this->apiUrl['uploadimageurl']        = 'Admin/Upload/uploadImg';
+        $this->apiUrl['index']                 = 'api/Upload/listData';
+        $this->apiUrl['delfile']               = 'api/Upload/delData';
+        $this->apiUrl['uploadimageurl']        = 'api/Upload/uploadImg';
     }
 
     public function index()
@@ -121,8 +121,8 @@ class Uploadfile extends Base
         $info = array(
             'num'       => input('num'),
             'title'     => '',
-            'upload'    => url('Admin/Ueditor/imageUp', array('savepath' => $path, 'pictitle' => 'banner', 'dir' => 'images')),
-            'fileList'  => url('Admin/File/lists', array('path' => $path)),
+            'upload'    => url('api/Ueditor/imageUp', array('savepath' => $path, 'pictitle' => 'banner', 'dir' => 'images')),
+            'fileList'  => url('api/File/lists', array('path' => $path)),
             'size'      => '4M',
             'type'      => 'zip,rar,tar,gz,7z,doc,docx,txt,xml',
             'input'     => input('input'),

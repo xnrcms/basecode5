@@ -28,13 +28,13 @@ class Devmenu extends Base
     {
         parent::__construct();
         $this->tpl                    = new \xnrcms\DevTpl();
-        $this->apiUrl['index']        = 'Admin/Devmenu/listData';
-        $this->apiUrl['edit']         = 'Admin/Devmenu/detailData';
-        $this->apiUrl['add_save']     = 'Admin/Devmenu/saveData';
-        $this->apiUrl['edit_save']    = 'Admin/Devmenu/saveData';
-        $this->apiUrl['quickedit']    = 'Admin/Devmenu/quickEditData';
-        $this->apiUrl['del']          = 'Admin/Devmenu/delData';
-        $this->apiUrl['release']      = 'Admin/Devmenu/releaseData';
+        $this->apiUrl['index']        = 'admin/Devmenu/listData';
+        $this->apiUrl['edit']         = 'admin/Devmenu/detailData';
+        $this->apiUrl['add_save']     = 'admin/Devmenu/saveData';
+        $this->apiUrl['edit_save']    = 'admin/Devmenu/saveData';
+        $this->apiUrl['quickedit']    = 'admin/Devmenu/quickEditData';
+        $this->apiUrl['del']          = 'admin/Devmenu/delData';
+        $this->apiUrl['release']      = 'admin/Devmenu/releaseData';
     }
 
 	/**

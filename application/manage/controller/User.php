@@ -25,14 +25,14 @@ class User extends Base
     {
         parent::__construct();
         $this->tpl                                  = new \xnrcms\DevTpl();
-        $this->apiUrl['index']                      = 'api/user/listData';
-        $this->apiUrl['edit']                       = 'api/user/userDetail';
-        $this->apiUrl['add_save']                   = 'api/user/saveData';
-        $this->apiUrl['edit_save']                  = 'api/user/saveData';
-        $this->apiUrl['quickedit']                  = 'api/user/quickEditData';
-        $this->apiUrl['del']                        = 'api/user/delData';
-        $this->apiUrl['quickEditUserDetailData']    = 'api/user/quickEditUserDetailData';
-        $this->apiUrl['setUserPrivilege']           = 'api/user/setUserPrivilege';
+        $this->apiUrl['index']                      = 'api/User/listData';
+        $this->apiUrl['edit']                       = 'api/User/userDetail';
+        $this->apiUrl['add_save']                   = 'api/User/saveData';
+        $this->apiUrl['edit_save']                  = 'api/User/saveData';
+        $this->apiUrl['quickedit']                  = 'api/User/quickEditData';
+        $this->apiUrl['del']                        = 'api/User/delData';
+        $this->apiUrl['quickEditUserDetailData']    = 'api/User/quickEditUserDetailData';
+        $this->apiUrl['setUserPrivilege']           = 'api/User/setUserPrivilege';
     }
 
     //所有用户，不按用户组划分

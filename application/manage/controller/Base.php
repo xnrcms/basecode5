@@ -192,7 +192,7 @@ class Base extends Controller
         $parame['hashid']	= $this->hashid;
         $parame['id']       = $this->uid;
 
-        $res 				= $this->apiData($parame,'Api/User/userDetail');
+        $res 				= $this->apiData($parame,'api/User/userDetail');
 
         $userInfo			= $res  ? $this->getApiData() : [];
 
@@ -238,7 +238,7 @@ class Base extends Controller
 			$parame['utype']		= 1;
 			$parame['jpushid']		= '';
 
-			$requestRes 			= apiReq($parame,'Api/User/ulogin');
+			$requestRes 			= apiReq($parame,'api/User/ulogin');
 
 			$backData 				= $requestRes[0];
 			$errorInfo				= $requestRes[1];
@@ -346,7 +346,7 @@ class Base extends Controller
         $parame['uid']          = $this->uid;
         $parame['hashid']       = $this->hashid;
         $parame['id']           = $listid;
-        $res                    = $this->apiData($parame,'Api/Sys/listdetail');
+        $res                    = $this->apiData($parame,'api/Sys/listdetail');
         $info                   = $res ? $this->getApiData() : [];
 
         if (empty($info))  return $data;
@@ -358,7 +358,7 @@ class Base extends Controller
         $parame['pid']          = $listid;
         $parame['page']         = 1;
         $parame['search']       = '';
-        $res                    = $this->apiData($parame,'Api/Sys/listtpl');
+        $res                    = $this->apiData($parame,'api/Sys/listtpl');
 
         $listTpl                = $res ? $this->getApiData() : [];
         $list                   = (!empty($listTpl) && isset($listTpl['lists'])) ? $listTpl['lists'] : [];
@@ -466,7 +466,7 @@ class Base extends Controller
         $parame['uid']          = $this->uid;
         $parame['hashid']       = $this->hashid;
         $parame['id']           = $formId;
-        $res                    = $this->apiData($parame,'Api/Sys/fromdetail');
+        $res                    = $this->apiData($parame,'api/Sys/fromdetail');
         $info                   = $res ? $this->getApiData() : [];
 
         if (empty($info))  return $data;
@@ -478,7 +478,7 @@ class Base extends Controller
         $parame['pid']          = $formId;
         $parame['page']         = 1;
         $parame['search']       = '';
-        $res                    = $this->apiData($parame,'Api/Sys/fromtpl');
+        $res                    = $this->apiData($parame,'api/Sys/fromtpl');
 
         $listTpl                = $res ? $this->getApiData() : [];
         $formList               = (!empty($listTpl) && isset($listTpl['lists'])) ? $listTpl['lists'] : [];

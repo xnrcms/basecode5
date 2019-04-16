@@ -26,27 +26,27 @@ class Devapi extends Base
     {
         parent::__construct();
 
-        $this->apiUrl['index']                      = 'Admin/Devapi/listData';
-        $this->apiUrl['edit']                       = 'Admin/Devapi/detailData';
-        $this->apiUrl['debug']                      = 'Admin/Devapi/detailData';
-        $this->apiUrl['add_save']                   = 'Admin/Devapi/saveData';
-        $this->apiUrl['edit_save']                  = 'Admin/Devapi/saveData';
-        $this->apiUrl['quickedit']                  = 'Admin/Devapi/quickEditData';
-        $this->apiUrl['del']                        = 'Admin/Devapi/delData';
-        $this->apiUrl['apirelease']                 = 'Admin/Devapi/apiRelease';
-        $this->apiUrl['import']                     = 'Admin/DevapiModule/importData';
+        $this->apiUrl['index']                      = 'admin/Devapi/listData';
+        $this->apiUrl['edit']                       = 'admin/Devapi/detailData';
+        $this->apiUrl['debug']                      = 'admin/Devapi/detailData';
+        $this->apiUrl['add_save']                   = 'admin/Devapi/saveData';
+        $this->apiUrl['edit_save']                  = 'admin/Devapi/saveData';
+        $this->apiUrl['quickedit']                  = 'admin/Devapi/quickEditData';
+        $this->apiUrl['del']                        = 'admin/Devapi/delData';
+        $this->apiUrl['apirelease']                 = 'admin/Devapi/apiRelease';
+        $this->apiUrl['import']                     = 'admin/DevapiModule/importData';
 
         //接口参数
-        $this->apiUrl['setparame']                  = 'Admin/DevapiParame/listData';
-        $this->apiUrl['quickeditdevapiparame']      = 'Admin/DevapiParame/quickEditData';
-        $this->apiUrl['deldevapiparame']            = 'Admin/DevapiParame/delData';
+        $this->apiUrl['setparame']                  = 'admin/DevapiParame/listData';
+        $this->apiUrl['quickeditdevapiparame']      = 'admin/DevapiParame/quickEditData';
+        $this->apiUrl['deldevapiparame']            = 'admin/DevapiParame/delData';
 
         //接口模块
-        $this->apiUrl['module_index']               = 'Admin/DevapiModule/listData';
-        $this->apiUrl['editmodule']                 = 'Admin/DevapiModule/detailData';
-        $this->apiUrl['addmodule_save']             = 'Admin/DevapiModule/saveData';
-        $this->apiUrl['editmodule_save']            = 'Admin/DevapiModule/saveData';
-        $this->apiUrl['delmodule']                  = 'Admin/DevapiModule/delData';
+        $this->apiUrl['module_index']               = 'admin/DevapiModule/listData';
+        $this->apiUrl['editmodule']                 = 'admin/DevapiModule/detailData';
+        $this->apiUrl['addmodule_save']             = 'admin/DevapiModule/saveData';
+        $this->apiUrl['editmodule_save']            = 'admin/DevapiModule/saveData';
+        $this->apiUrl['delmodule']                  = 'admin/DevapiModule/delData';
 
         //项目ID
         $this->project_id   = 1;
@@ -1078,7 +1078,7 @@ class Devapi extends Base
         $parame['hashid']       = $this->hashid;
         $parame['model_id']     = $data['model_id'];
         $parame['api_id']       = $data['api_id'];
-        $apiName                = 'Admin/'.humpToLine('DevapiModule').'/exportData';
+        $apiName                = 'admin/'.humpToLine('DevapiModule').'/exportData';
 
         $backData               = $apiRequest->postData($parame,$apiName);
         $errorInfo              = $apiRequest->getError();

@@ -26,12 +26,12 @@ class Devproject extends Base
     {
         parent::__construct();
         $this->tpl                    = new \xnrcms\DevTpl();
-        $this->apiUrl['index']        = 'Admin/Devproject/listData';
-        $this->apiUrl['edit']         = 'Admin/Devproject/detailData';
-        $this->apiUrl['add_save']     = 'Admin/Devproject/saveData';
-        $this->apiUrl['edit_save']    = 'Admin/Devproject/saveData';
-        $this->apiUrl['quickedit']    = 'Admin/Devproject/quickEditData';
-        $this->apiUrl['del']          = 'Admin/Devproject/delData';
+        $this->apiUrl['index']        = 'admin/Devproject/listData';
+        $this->apiUrl['edit']         = 'admin/Devproject/detailData';
+        $this->apiUrl['add_save']     = 'admin/Devproject/saveData';
+        $this->apiUrl['edit_save']    = 'admin/Devproject/saveData';
+        $this->apiUrl['quickedit']    = 'admin/Devproject/quickEditData';
+        $this->apiUrl['del']          = 'admin/Devproject/delData';
     }
 
 	//列表页面

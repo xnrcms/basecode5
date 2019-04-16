@@ -28,12 +28,12 @@ class Devlist extends Base
     {
         parent::__construct();
 
-        $this->apiUrl['index']        = 'Admin/Devlist/listData';
-        $this->apiUrl['edit']         = 'Admin/Devlist/detailData';
-        $this->apiUrl['add_save']     = 'Admin/Devlist/saveData';
-        $this->apiUrl['edit_save']    = 'Admin/Devlist/saveData';
-        $this->apiUrl['quickedit']    = 'Admin/Devlist/quickEditData';
-        $this->apiUrl['del']          = 'Admin/Devlist/delData';
+        $this->apiUrl['index']        = 'admin/Devlist/listData';
+        $this->apiUrl['edit']         = 'admin/Devlist/detailData';
+        $this->apiUrl['add_save']     = 'admin/Devlist/saveData';
+        $this->apiUrl['edit_save']    = 'admin/Devlist/saveData';
+        $this->apiUrl['quickedit']    = 'admin/Devlist/quickEditData';
+        $this->apiUrl['del']          = 'admin/Devlist/delData';
     }
 
 	/**
@@ -427,7 +427,7 @@ class Devlist extends Base
 					}
 				}
 
-				cache(md5("Admin/Devlist/detailData".$value['id']),$value);
+				cache(md5("admin/Devlist/detailData".$value['id']),$value);
 			}
 		}
 
@@ -462,7 +462,7 @@ class Devlist extends Base
 	        $config 			= [];
 
 	        if ($id > 0 ) {
-	        	$info 				= cache(md5("Admin/Devlist/detailData".$id));
+	        	$info 				= cache(md5("admin/Devlist/detailData".$id));
 
 	        	if (empty($info) ) $this->error('列表模板数据不存在');
 
@@ -552,7 +552,7 @@ class Devlist extends Base
 					}
 				}
 
-				cache(md5("Admin/Devlist/details".$value['id']),$value);
+				cache(md5("admin/Devlist/details".$value['id']),$value);
 			}
 		}
 
@@ -586,7 +586,7 @@ class Devlist extends Base
 	        $parame['listid']		= intval(input('listId'));
 	        $parame['cloneData']	= json_encode($clone);
 
-	        $res 					= $this->apiData($parame,'Admin/Devlist/saveClone');
+	        $res 					= $this->apiData($parame,'admin/Devlist/saveClone');
 	        if($res){
 
 				$this->success( '克隆成功', Cookie('__forward__'));
