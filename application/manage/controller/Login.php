@@ -92,7 +92,6 @@ class Login extends Controller
 	/* 退出登录 */
 	public function logout()
 	{
-		cache('SystemAuthMenu' . session('user_auth.user_hash'),null);
 		session('user_auth', null);
 		session('user_auth_sign', null);
 		session('apidoc_user_auth', null);

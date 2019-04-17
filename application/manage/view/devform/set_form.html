@@ -78,6 +78,7 @@
                   <div class="onoff" style="text-align: center;">
                     <label for="menu_require1_{$vo.id}" class="cb-enable {if condition="$vo['config']['require'] eq 1"}selected{/if}">是</label>
                     <label for="menu_require0_{$vo.id}" class="cb-disable {if condition="$vo['config']['require'] eq 0"}selected{/if}">否</label>
+
                     <input id="menu_require1_{$vo.id}" name="require_{$vo.id}" value="1" type="radio" {if condition="$vo['config']['require'] eq 1"}checked{/if}>
                     <input id="menu_require0_{$vo.id}" name="require_{$vo.id}" value="0" type="radio" {if condition="$vo['config']['require'] eq 0"}checked{/if}>
                   </div>
@@ -285,8 +286,8 @@ function getHtmlStr(){
       htmls += '<div class="onoff" style="text-align: center;">';
       htmls += '<input id="menu_require1_0" name="require_0" value="1" type="radio" >';
       htmls += '<input id="menu_require0_0" name="require_0" value="0" type="radio" checked="checked">';
-      htmls += '<label for="menu_require1_0" class="cb-enable  selected">是</label>';
-      htmls += '<label for="menu_require0_0" class="cb-disable">否</label>';
+      htmls += '<label for="menu_require1_0" class="cb-enable">是</label>';
+      htmls += '<label for="menu_require0_0" class="cb-disable selected">否</label>';
       htmls += '</div></td>';
 
       htmls += '<td width="11%">';

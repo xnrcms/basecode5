@@ -9,13 +9,14 @@
 			$info[$form['tag']] = is_string($info[$form['tag']]) ? explode(',',$info[$form['tag']]) : $info[$form['tag']];
 		{/php}
 
-		{if condition="$form['default']['type'] eq 'string'"}
+		{if condition="isset($form['default']['type']) && $form['default']['type'] eq 'string'"}
 			{volist name="$form['default']['parame']" id="vo"}
 				<label>
 				<input type="checkbox" name="{$form.tag}[{$key}]" value="{$key}" {$form.attr} {if condition="in_array($key,$info[$form['tag']])"} checked="checked"{/if}> {$vo}
 				</label>
 			{/volist}
-		{else /}
+		{/if}
+		{if condition="isset($form['default']['type']) && $form['default']['type'] eq 'parame'"}
 			{volist name="defaultData[$form['default']['parame']]" id="vo"}
 				<label>
 				<input type="checkbox" name="{$form.tag}[{$key}]" value="{$key}" {$form.attr} {if condition="in_array($key,$info[$form['tag']])"} checked="checked"{/if}> {$vo}

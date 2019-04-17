@@ -27,7 +27,8 @@ if (!function_exists('is_login'))
 
 if (!function_exists('is_dev'))
 {
-	function is_dev(){
+	function is_dev()
+	{
 		$domain 		= get_domain();
 		$project_url 	= config('extend.apidoc_project_url');
 		return  trim($domain,'/') == trim($project_url,'/') ? true : false;
@@ -51,7 +52,8 @@ if (!function_exists('data_auth_sign'))
 	 * @param  string $signType 签名加密方式[暂时不用]
 	 * @return string       签名
 	 */
-	function data_auth_sign($data,$signType = 'SHA1') {
+	function data_auth_sign($data,$signType = 'SHA1')
+	{
 		//数据类型检测
 		if(!is_array($data)) return "";
 		ksort($data);//排序
@@ -301,26 +303,6 @@ if (!function_exists('wr'))
 	}
 }
 
-if (!function_exists('lottery_truetime'))
-{
-	//数据库写入，快捷调试
-	function lottery_truetime($lottery_id,$time = '',$term_number = '')
-	{	
-		$dbModel 		= db('lottery_truetime');
-		if (!empty($time)) {
-			$dbModel->where('id','=',$lottery_id)->update(['true_time'=>$time,'term_number'=>$term_number]);
-		}else{
-			$info 				= $dbModel->where('id','=',$lottery_id)->field('true_time,term_number')->find();
-			if (!empty($info)) {
-				$time 				= $info['true_time'];
-				$term_number 		= $info['term_number'];
-			}
-		}
-
-		return [$time,$term_number];
-	}
-}
-
 if (!function_exists('dblog'))
 {
 	//数据库写入，快捷调试
@@ -464,16 +446,22 @@ function formatUploadFileName(){
 }
 
 // 递归删除文件夹
-function delFile($path,$delDir = FALSE) {
-    if(!is_dir($path))
-       return FALSE;		
+function delFile($path,$delDir = FALSE)
+{
+    if(!is_dir($path)) return FALSE;
+
 	$handle = @opendir($path);
-	if ($handle) {
-		while (false !== ( $item = readdir($handle) )) {
+
+	if ($handle)
+	{
+		while (false !== ( $item = readdir($handle) ))
+		{
 			if ($item != "." && $item != ".." && $item != '.svn')
-				is_dir("$path/$item") ? delFile("$path/$item", $delDir) : unlink("$path/$item");
+			is_dir("$path/$item") ? delFile("$path/$item", $delDir) : unlink("$path/$item");
 		}
+
 		closedir($handle);
+
 		if ($delDir) return rmdir($path);
 	}else {
 		if (file_exists($path)) {
@@ -494,15 +482,15 @@ function formatStringToHump($string ='',$delimiter='_')
 {
 	$str  	= '';
 
-	if (is_string($string) && !empty($string) && !empty($delimiter)) {
-
+	if (is_string($string) && !empty($string) && !empty($delimiter))
+	{
 		//以下划线分割
         $arr   	= explode($delimiter,$string);
 
-        if (!empty($arr)) {
-
-            foreach ($arr as $v) {
-
+        if (!empty($arr))
+        {
+            foreach ($arr as $v)
+            {
                 $str .= ucwords($v);
             }
         }
@@ -514,25 +502,27 @@ function formatStringToHump($string ='',$delimiter='_')
 	return $str;
 }
 
-/**
- * 格式化输出无限极分类
- * @param  array  	$category  	需要格式化的数据
- * @param  integer 	$parent_id  父级ID
- * @return array             	格式化后的数据
- */
+
 if (!function_exists('toLevel'))
 {
+	/**
+	 * 格式化输出无限极分类
+	 * @param  array  	$category  	需要格式化的数据
+	 * @param  integer 	$parent_id  父级ID
+	 * @return array             	格式化后的数据
+	*/
 	function toLevel($arr, $parent_id = 0)
 	{
-	    if (!empty($arr)) {
-	    	
-	    	foreach ($arr as $v) {
-		        if (isset($v[5]) && $v[5] == $parent_id) {
-
+	    if (!empty($arr))
+	    {
+	    	foreach ($arr as $v)
+	    	{
+		        if (isset($v[5]) && $v[5] == $parent_id)
+		        {
 		        	$data[$v[4]] 		= array_merge($v,[[]]);
 		        	
-		        	if ( in_array($v[1],['array','object'])) {
-
+		        	if ( in_array($v[1],['array','object']))
+		        	{
 		        		$data[$v[4]][7] = toLevel($arr,$v[4]);
 		        	}
 		        }
@@ -673,6 +663,22 @@ if(!function_exists('convertUnderline'))
 	}
 }
 
+
+if(!function_exists('lineToHump'))
+{
+	/**
+	 * 下划线转驼峰
+	 * @param  string $str 待转字符串
+	 * @return string      已转字符串
+	 */
+	function lineToHump($str ='',$delimiter='_')
+	{
+
+		$str = $delimiter. str_replace($delimiter, " ", strtolower($str));
+        return ltrim(str_replace(" ", "", ucwords($str)), $delimiter );
+	}
+}
+
 if(!function_exists('humpToLine'))
 {
 	/**
@@ -680,19 +686,15 @@ if(!function_exists('humpToLine'))
 	 * @param  string $str 待转字符串
 	 * @return string      已转字符串
 	 */
-	function humpToLine($str)
+	function humpToLine($str,$delimiter='_')
 	{
-	    $str = preg_replace_callback('/([A-Z]{1})/',function($matches){
-	        return '_'.strtolower($matches[0]);
-	    },$str);
-	    return !empty($str) ? trim($str,'_') : '';
+		return strtolower(preg_replace('/([a-z])([A-Z])/', "$1" . $delimiter . "$2", $str));
 	}
 }
 
 //接口文档授权登录执行
 function apidocReq($parame,$apiName,$headers=[])
 {
-
 	$ApiUrl					= config('extend.apidoc_url');
 	$ApiId 					= config('extend.api_auth_id');
 	$ApiKey					= config('extend.api_auth_key');
@@ -734,8 +736,8 @@ if(!function_exists('sendJpus'))
 	 * @date：2018/2/2 14:22
 	 * @description：极光推送
 	 */
-	function sendJpus($jpushid=array(), $msg='', $extras=[]){
-
+	function sendJpus($jpushid=array(), $msg='', $extras=[])
+	{
 	    $config = config('jpush.') ;
 
 	    $app_key 				= $config['appkey'];
@@ -768,701 +770,6 @@ if(!function_exists('sendJpus'))
 	    return $res ;
 	}
 }
-if(!function_exists('getSignature'))
-{	
-	/**
-	 * @Author :xnrcms<562909771@qq.com>
-	 * @date：2018/6/2 14:22
-	 * @description：双乾支付加密签名
-	 */
-	function getSignature($MerNo, $BillNo, $Amount, $ReturnURL, $MD5key)
-	{
-	    $sign_params  = [
-	        'MerNo'       => $MerNo,
-	        'BillNo'      => $BillNo, 
-	        'Amount'      => $Amount,   
-	        'ReturnURL'   => $ReturnURL
-	    ];
-	    $sign_str = "";
-	    ksort($sign_params);
-	    foreach ($sign_params as $key => $val){
-	        $sign_str .= sprintf("%s=%s&", $key, $val);
-	    }
-
-	    return strtoupper(md5($sign_str. strtoupper(md5($MD5key))));   
-	}
-}
-
-if(!function_exists('getDistributionLevel'))
-{	
-	/**
-	 * @Author :xnrcms<562909771@qq.com>
-	 * @date：2018/6/2 14:22
-	 * @description：格式化分销比例
-	 */
-	function getDistributionLevel($money=0)
-	{
-		$config 		= config('system_config.');
-		$rate1 			= $config['fen_first_rate'];
-		$rate2 			= $config['fen_second_rate'];
-		$rate3 			= $config['fen_third_rate'];
-		return [$rate1,$rate2,$rate3];
-	}
-}
-
-if(!function_exists('getOddsRebate'))
-{	
-	/**
-	 * @Author :xnrcms<562909771@qq.com>
-	 * @date：2018/6/2 14:22
-	 * @description：倍率和返利换算
-	 */
-	function getOddsRebate($rebate=0,$odds=0,$odds_rebate=0)
-	{
-		if (empty($odds) || $odds <= 0 ) return 0;
-		$odds = $rebate >0 ? $odds-(($odds-$odds_rebate)/13)*$rebate : $odds;
-		return sprintf("%.3f",$odds);
-	}
-}
-
-if(!function_exists('getOddsRebates'))
-{	
-	/**
-	 * @Author :xnrcms<562909771@qq.com>
-	 * @date：2018/6/2 14:22
-	 * @description：多倍率和返利换算
-	 */
-	function getOddsRebates($rebate=0,$odds='')
-	{
-		if (empty($odds) || $odds <= 0 ) return [0];
-		$odds 			= explode(',',$odds);
-		$arr 			= [];
-
-		foreach ($odds as $key => $value)
-		{
-			if (strpos($value,'-') === false) {
-				$arr[] 		= getOddsRebate($rebate,$value,0);
-			}else{
-				$vv  		= explode('-',$value);
-				$arr[] 		= getOddsRebate($rebate,$vv[0],$vv[1]);
-			}
-		}
-
-		return $arr;
-	}
-}
-
-if(!function_exists('repeatNumForNumber'))
-{	
-	/**
-	 * @Author :xnrcms<562909771@qq.com>
-	 * @date：2018/6/2 14:22
-	 * @description：检测字符串单个字符在整个字符串中出现的次数
-	 */
-	function repeatNumForNumber($num='',$n=0)
-	{	
-		$strlen 		= strlen($num);
-		if ($strlen <= 0) return 0;
-		for ($i=0; $i < $strlen; $i++) { 
-			$n1 	= substr($num,$i,1);
-			$n2 	= substr_count('#'.$num, $n1);
-			if ( $n2== $n) return $n2;
-		}
-		return 0;
-	}
-}
-
-if(!function_exists('sscOddsMoney'))
-{	
-	/**
-	 * @Author :xnrcms<562909771@qq.com>
-	 * @date：2018/6/2 14:22
-	 * @description：时时彩赔率金额计算
-	 */
-	function sscOddsMoney($tag='',$rebate,$lotteryRule,$price,$isWin,$aid=0,$agentOdds=[])
-	{	
-		$odds_rebate 			= $lotteryRule['odds_rebate'];
-		$money 					= 0;
-		$winBets 				= isset($isWin[0]) ? intval($isWin[0]) : 0;
-		$winCode 				= isset($isWin[1]) ? $isWin[1] : [];
-
-		if ($aid > 0 && !empty($agentOdds) && !empty($agentOdds['odds2'])) {
-			$odds 				= !empty($agentOdds['odds2']) ? $agentOdds['odds2'] : $agentOdds['odds1'];
-		}else{
-			$odds 				= !empty($lotteryRule['odds2']) ? $lotteryRule['odds2'] : $lotteryRule['odds'];
-		}
-
-		//赔率个数
-		$ocount 				= count(explode(',',$odds));
-    	$odds           		= $ocount>=2 ? getOddsRebates(0,$odds) : getOddsRebate(0,$odds,0);
-    	$orderOdds 				= [];
-
-        if (in_array($tag,['88-1-3','88-11-3','88-11-10']))
-        {
-            if (!empty($winCode)) {
-	            foreach ($winCode as $kk => $vv)
-	            {
-	                for ($i=$vv; $i > 0; $i--) {
-	                	$oo 			= $odds[(count($odds)-$i)];
-	                    $money 			+= $oo*$price*1;
-        				$orderOdds[$oo]	= $oo;
-	                }
-	            }
-            }
-
-        }
-        elseif (in_array($tag,['88-7-1','88-7-2','88-7-3','88-7-4','88-7-5','88-7-6','88-7-7','88-7-8','88-7-9','88-7-10'])) {
-        	$ops  = ['龙','虎','和'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-				$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-				$money 			+= $oo*$price*1*$winBets;
-				$orderOdds[]	= $oo;
-			}
-        }
-        elseif (in_array($tag,['88-8-1','88-8-2','88-8-3','88-8-4','88-8-5','88-8-6'])) {
-        	foreach ($winCode as $key => $value) {
-				$money 			+= $odds*$price;
-			}
-
-			$orderOdds[]	= $odds;
-        }
-        elseif (in_array($tag,['88-9-1','88-9-2','88-9-3'])) {
-        	$ops  = ['豹子','顺子','对子','半顺','杂六'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-				$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-				$money 			+= $oo*$price*1*$winBets;
-				$orderOdds[]	= $oo;
-			}
-        }
-        elseif (in_array($tag,['88-10-1'])) {
-        	$ops  = ['牛牛','牛九','牛八','牛七','牛六','牛五','牛四','牛三','牛二','牛一','无牛'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-				$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-				$money 			+= $oo*$price*1*$winBets;
-				$orderOdds[]	= $oo;
-			}
-        }
-        elseif (in_array($tag,['88-8-7'])) {
-        	if (!empty($winCode)) {
-	            foreach ($winCode as $kk => $vv)
-	            {
-	            	$winCode1 		= explode(',',$vv);
-	            	$oo 			= pow($odds, count($winCode1));
-	                $money 			+= $oo*$price*1;
-	            }
-
-        		$orderOdds[]	= $oo;
-        	}
-        }
-        elseif (in_array($tag,['88-12-8','88-12-24','88-12-16']))
-        {
-            if (!empty($winCode)) {
-	            foreach ($winCode as $kk => $vv)
-	            {
-	                $n1     		= repeatNumForNumber($vv,2);
-	                $oo 			= $odds[($n1 == 2 ? 0 : 1)];
-	                $money 			+= $oo*$price*1;
-        			$orderOdds[]	= $oo;
-	            }
-        	}
-        }
-        else
-        {
-        	$money 			+= $odds*$price*$winBets;
-        	$orderOdds[]	= $odds;
-        }
-
-        return [sprintf("%.3f",$money),(!empty($orderOdds) ? implode(',',$orderOdds) : '')];
-	}
-}
-
-if(!function_exists('pk10OddsMoney'))
-{	
-	/**
-	 * @Author :xnrcms<562909771@qq.com>
-	 * @date：2018/6/2 14:22
-	 * @description：PK10赔率金额计算
-	 */
-	function pk10OddsMoney($tag='',$rebate,$lotteryRule,$price,$isWin,$aid=0,$agentOdds=[])
-	{	
-		$odds_rebate 			= $lotteryRule['odds_rebate'];
-		$money 					= 0;
-		$winBets 				= isset($isWin[0]) ? intval($isWin[0]) : 0;
-		$winCode 				= isset($isWin[1]) ? $isWin[1] : [];
-
-		if ($aid > 0 && !empty($agentOdds) && !empty($agentOdds['odds2'])) {
-			$odds 				= !empty($agentOdds['odds2']) ? $agentOdds['odds2'] : $agentOdds['odds1'];
-		}else{
-			$odds 				= !empty($lotteryRule['odds2']) ? $lotteryRule['odds2'] : $lotteryRule['odds'];
-		}
-
-		//赔率个数
-		$ocount 				= count(explode(',',$odds));
-    	$odds           		= $ocount>=2 ? getOddsRebates(0,$odds) : getOddsRebate(0,$odds,0);
-    	$orderOdds 				= [];
-
-        if (in_array($tag,['96-5-1'])) {//和值
-        	
-        	if (!empty($winCode)) {
-        		foreach ($winCode as $kk => $vv)
-	            {
-	            	$oo 			= $odds[($vv*1-3)];
-	                $money 			+= $oo*$price*1;
-	                $orderOdds[]	= $oo;
-	            }
-        	}
-        }elseif (in_array($tag,['96-8-1','96-8-2','96-8-3','96-8-4','96-8-5','96-8-6','96-8-7'])) {//大小单双
-            if (!empty($winCode)) {
-            	if (in_array($tag,['96-8-1','96-8-2','96-8-3'])) {
-            		$ops  = ['大','小'];
-            	}else if ( in_array($tag,['96-8-4','96-8-5','96-8-6']) ) {
-            		$ops  = ['单','双'];
-            	}else{
-            		$ops  = ['大','小','单','双'];
-            	}
-
-        		$ops  = array_flip($ops);
-
-        		foreach ($winCode as $kk => $vv)
-	            {
-	            	$oo 			= isset($ops[$vv])?(isset($odds[$ops[$vv]])?$odds[$ops[$vv]]:0):0;
-	                $money 			+= $oo*$price*1;
-	                $orderOdds[]	= $oo;
-	            }
-        	}
-        }else{
-        	$money 			+= $odds*$price*$winBets;
-        	$orderOdds[]	= $odds;
-        }
-
-        return [sprintf("%.3f",$money),(!empty($orderOdds) ? implode(',',$orderOdds) : '')];
-	}
-}
-
-if(!function_exists('hk6OddsMoney'))
-{
-	/**
-	 * @Author :xnrcms<562909771@qq.com>
-	 * @date：2018/6/2 14:22
-	 * @description：六合彩赔率金额计算
-	 */
-	function hk6OddsMoney($tag='',$rebate,$lotteryRule,$price,$isWin,$aid=0,$agentOdds=[],$orderinfo=[])
-	{	
-		$odds_rebate 			= $lotteryRule['odds_rebate'];
-		$money 					= 0;
-		$winBets 				= isset($isWin[0]) ? intval($isWin[0]) : 0;
-		$winCode 				= isset($isWin[1]) ? $isWin[1] : [];
-
-		if ($aid > 0 && !empty($agentOdds) && !empty($agentOdds['odds2'])) {
-			$odds 				= !empty($agentOdds['odds2']) ? $agentOdds['odds2'] : $agentOdds['odds1'];
-		}else{
-			$odds 				= !empty($lotteryRule['odds2']) ? $lotteryRule['odds2'] : $lotteryRule['odds'];
-		}
-
-		//赔率个数
-		$ocount 				= count(explode(',',$odds));
-    	$odds           		= $ocount>=2 ? getOddsRebates(0,$odds) : getOddsRebate(0,$odds,0);
-    	$orderOdds 				= [];
-
-    	$ops  = ['特单','特双','特大','特小','特合单','特合双','特合大','特合小','特尾大','特尾小','特天肖','特地肖','特前肖','特后肖','特家肖','特野肖','总单','总双','总大','总小'];
-    	$ops  = array_flip($ops);
-    	$oo   = 0;
-
-    	if (in_array($tag,['99-1-1'])) {//两面
-    		if (in_array('和局',$winCode)) {
-    			//除了 总单 总双 总大  总小 之外 其余全部退回
-    			foreach ($winCode as $key => $value) {
-    				if (in_array($value,['总单','总双','总大','总小'])) {
-						$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-						$money 			+= $oo*$price*1;
-						$orderOdds[]	= $oo;
-    				}else{
-    					if ($value != '和局') {
-    						$money 		+= $price*1;
-    					}
-    				}
-				}
-    		}else{
-    			
-				foreach ($winCode as $key => $value) {
-					$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-					$money 			+= $oo*$price*1;
-					$orderOdds[]	= $oo;
-				}
-    		}
-        }elseif (in_array($tag,['99-2-1','99-3-1','99-4-1','99-4-2','99-4-3','99-4-4','99-4-5','99-4-6'])) {
-        	foreach ($winCode as $key => $value) {
-        		$wnum 		= intval($value) - 1;
-				$oo 		= isset($odds[$wnum]) ? $odds[$wnum] : 0;
-				$orderOdds[]= $oo;
-				$money 		+= $oo*$price*1;
-			}
-        }
-        elseif (in_array($tag,['99-5-1','99-5-2','99-5-3','99-5-4','99-5-5','99-5-6'])) {//正码1-6
-        	$ops  = ['单','双','大','小','合单','合双','合大','合小','尾大','尾小','红波','绿波','蓝波'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	//判断是否和局
-        	if (in_array('和局',$winCode)) {
-        		$hnum 		= isset($winCode['和局N']) ? intval($winCode['和局N']) : 0;
-    			$money 		= $orderinfo['price'] * $hnum;
-
-    			foreach ($winCode as $key => $value) {
-    				if (in_array($value,['红波','绿波','蓝波'])) {
-						$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-						$money 			+= $oo*$price*1;
-						$orderOdds[]	= $oo;
-    				}
-				}
-    		}else{
-    			foreach ($winCode as $key => $value) {
-					$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-					$money 			+= $oo*$price*1;
-					$orderOdds[]	= $oo;
-				}
-    		}
-        }elseif (in_array($tag,['99-6-1'])) {//大小单双
-        	$ops  = ['单','双','大','小','合单','合双','合大','合小','尾大','尾小','红波','绿波','蓝波'];
-        	$ops  = array_flip($ops);
-
-        	foreach ($winCode as $kk => $vv) {
-        		$win 	= explode(',',$vv);
-        		$ooo 	= 1;
-        		foreach ($win as $key => $value) {
-					$oo 		= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-					$ooo 		*=  $oo;		
-				}
-
-				$money 			+= $ooo*$price*1;
-				$orderOdds[]	= $ooo;
-        	}
-        }elseif (in_array($tag,['99-7-3','99-7-5'])) {//连码 三中二 ，二中特
-        	foreach ($winCode as $kk => $vv) {
-        		$winNum 	= explode('#',$vv);
-        		if (isset($winNum[1]) && in_array($winNum[1],[2,3])) {
-        			$oo 			= isset($odds[3-$winNum[1]]) ? $odds[3-$winNum[1]] : 0;
-        			$money 			+= $oo*$price*1;
-        			$orderOdds[]	= $oo;
-        		}
-        	}
-        }
-        else if (in_array($tag,['99-8-1','99-8-2','99-8-3','99-8-4'])) {
-        	$ops  = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	//对应生肖和赔率
-        	foreach ($ops as $key => $value) {
-        		$oddsArr[$key] = $odds[$value];
-        	}
-
-        	foreach ($winCode as $key => $value)
-        	{
-        		//分解尾号 格式化对应生肖赔率
-        		$winWs 		= explode(',',$value);
-        		$winOdds 	= [];
-        		foreach ($winWs as $k1 => $v1) {
-        			$winOdds[$v1] 	= $oddsArr[$v1];
-        		}
-
-        		//找出最小赔率
-        		$minOdds 		= min($winOdds);
-				$money 			+= $minOdds*$price*1;
-				$orderOdds[]	= $minOdds;
-			}
-
-        	/*//取第一个生肖赔率
-        	foreach ($winCode as $key => $value) {
-        		$sx 		= explode(',',$value);
-				$oo 		= isset($ops[$sx[0]])?(isset($odds[$ops[$sx[0]]])?$odds[$ops[$sx[0]]]:0):0;
-				break;
-			}
-			$money 			+= $oo*$price*$winBets;*/
-        }else if (in_array($tag,['99-8-5','99-8-6','99-8-7','99-8-8'])) {
-        	$ops  = ['尾0','尾1','尾2','尾3','尾4','尾5','尾6','尾7','尾8','尾9'];
-        	$ops  = array_flip($ops);
-
-        	//对应尾号和赔率
-        	foreach ($ops as $key => $value) {
-        		$oddsArr[$key] = $odds[$value];
-        	}
-        	
-        	foreach ($winCode as $key => $value)
-        	{
-        		//分解尾号 格式化对应尾号赔率
-        		$winWs 		= explode(',',$value);
-        		$winOdds 	= [];
-        		foreach ($winWs as $k1 => $v1) {
-        			$winOdds[$v1] 	= $oddsArr[$v1];
-        		}
-
-        		//找出最小赔率
-        		$minOdds 		= max($winOdds);
-				$money 			+= $minOdds*$price*1;
-				$orderOdds[]	= $minOdds;
-			}
-
-        }elseif (in_array($tag,['99-10-1'])) {
-        	$ops  = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-        	foreach ($winCode as $key => $value) {
-        		$sx 			= explode('#',$value);
-				$oo 			= isset($ops[$sx[0]])?(isset($odds[$ops[$sx[0]]])?$odds[$ops[$sx[0]]]:0):0;
-				$money 			+= $price * ($oo-1)*$sx[1] + $price;//本金*（赔率-1）*中奖次数+本金
-				$orderOdds[]	= ($oo-1);
-			}
-        }
-        else if (in_array($tag,['99-10-2','99-10-3'])) {
-        	$ops  = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-				$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-				$money 			+= ($oo-1)*$price*1+$price;
-				$orderOdds[]	= $oo;
-			}
-        }else if (in_array($tag,['99-10-4'])) {
-        	$ops  = ['234肖','5肖','6肖','7肖','总肖单','总肖双'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-				$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-				$money 			+= ($oo-1)*$price*1+$price;
-				$orderOdds[]	= $oo;
-			}
-        }elseif (in_array($tag,['99-11-1'])) {
-        	$ops  = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
-        	$ops  = array_flip($ops);
-        	
-        	foreach ($winCode as $key => $value) {
-        		$wcode 			= explode('#',$value);
-        		$scode 			= isset($wcode[1]) ? explode(',',$wcode[1]) : [];
-        		$oo 			= 0;
-
-        		foreach ($scode as $key => $value) {
-					$oo 		+= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-				}
-
-				$nn 			= count($scode);
-				$oo 			= $oo/$nn/$nn;
-				$money 			+= $oo*$price*1;
-				$orderOdds[]	= $oo;
-			}
-        }
-        else if (in_array($tag,['99-12-1'])) {
-        	$ops  = ['红波','蓝波','绿波'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-				$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-				$money 			+= $oo*$price*1*$winBets;
-				$orderOdds[]	= $oo;
-			}
-        }else if (in_array($tag,['99-12-2'])) {
-        	if (in_array('和局',$winCode)) {
-    			$money 		= $orderinfo['money'];
-    		}else{
-    			$ops  = ['红单','红双','红大','红小','绿单','绿双','绿大','绿小','蓝单','蓝双','蓝大','蓝小'];
-	        	$ops  = array_flip($ops);
-	        	$oo   = [];
-
-	        	foreach ($winCode as $key => $value) {
-					$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-					$money 			+= $oo*$price*1;
-					$orderOdds[]	= $oo;
-				}
-    		}
-        }else if (in_array($tag,['99-12-3'])) {
-        	$ops  = ['红大单','红大双','红小单','红小双','绿大单','绿大双','绿小单','绿小双','蓝大单','蓝大双','蓝小单','蓝小双'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-        		//退回本金
-        		if ($value == '和局') {
-        			$money 		= $orderinfo['money'];
-        			break;
-        		}else{
-					$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-					$money 			+= $oo*$price*1*$winBets;
-					$orderOdds[]	= $oo;
-        		}
-			}
-        }else if (in_array($tag,['99-12-4'])) {
-        	$ops  = ['红波','蓝波','绿波','和局'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-        		if ($key == '和局1') {
-        			$hnum1 			= explode('#', $value);
-        			$hnum2 			= isset($hnum1[1]) ? $hnum1[1] : 0;
-        			$money 			+= $hnum2 * $orderinfo['price'];
-        		}else{
-					$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-					$money 			+= $oo*$price;
-					$orderOdds[]	= $oo;
-				}
-			}
-        }
-        else if (in_array($tag,['99-13-1'])) {
-        	$ops  = ['头0','头1','头2','头3','头4','尾5','尾6','尾7','尾8','尾9','尾10','尾11','尾12','尾13','尾14'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-        		$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-				$money 			+= $oo*$price*1;
-				$orderOdds[]	= $oo;
-			}
-        }
-        else if (in_array($tag,['99-13-2'])) {
-        	$ops  = ['尾0','尾1','尾2','尾3','尾4','尾5','尾6','尾7','尾8','尾9'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-        		$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-				$money 			+= $oo*$price*1;
-				$orderOdds[]	= $oo;
-			}
-        }
-        else if (in_array($tag,['99-14-1'])) {
-        	$ops  = ['单0双7','单1双6','单2双5','单3双4','单4双3','单5双2','单6双1','单7双0','大0小7','大1小6','大2小5','大3小4','大4小3','大5小2','大6小1','大7小0'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-        		$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-				$money 			+= $oo*$price*1;
-				$orderOdds[]	= $oo;
-			}
-        }
-        else if (in_array($tag,['99-14-2'])) {
-        	$ops  = ['金','木','水','火','土'];
-        	$ops  = array_flip($ops);
-        	$oo   = 0;
-
-        	foreach ($winCode as $key => $value) {
-        		$oo 			= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-				$money 			+= $oo*$price*1;
-        		$orderOdds[]	= $oo;
-			}
-        }
-        else{
-        	$money 			+= $odds*$price*$winBets;
-        	$orderOdds[]	= $odds;
-        }
-
-        return [sprintf("%.3f",$money),(!empty($orderOdds) ? implode(',',$orderOdds) : '')];
-	}
-}
-
-if(!function_exists('oneOddsMoney'))
-{
-	/**
-	 * @Author :xnrcms<562909771@qq.com>
-	 * @date：2018/6/2 14:22
-	 * @description：单赔率金额计算
-	 */
-	function oneOddsMoney($tag='',$rebate,$lotteryRule,$price,$isWin,$aid=0,$agentOdds=[])
-	{	
-		$odds_rebate 			= $lotteryRule['odds_rebate'];
-		$money 					= 0;
-		$winBets 				= isset($isWin[0]) ? intval($isWin[0]) : 0;
-		$winCode 				= isset($isWin[1]) ? $isWin[1] : [];
-
-		$orderOdds 				= [];
-
-        $odds 					= $aid > 0 ? $agentOdds : $lotteryRule['odds'];
-    	$odds           		= getOddsRebate(0,$odds,0);
-    	$money 					+= $odds*$price*$winBets;
-        
-        $orderOdds[]			= $odds;
-
-        return [sprintf("%.3f",$money),(!empty($orderOdds) ? implode(',',$orderOdds) : '')];
-	}
-}
-
-if(!function_exists('manyOddsMoney'))
-{
-	/**
-	 * @Author :xnrcms<562909771@qq.com>
-	 * @date：2018/6/2 14:22
-	 * @description：多赔率金额计算-PC蛋蛋
-	 */
-	function manyOddsMoneyPC($tag='',$rebate,$lotteryRule,$price,$isWin,$aid=0,$agentOdds=[])
-	{	
-		$odds_rebate 			= $lotteryRule['odds_rebate'];
-		$money 					= 0;
-		$winBets 				= isset($isWin[0]) ? intval($isWin[0]) : 0;
-		$winCode 				= isset($isWin[1]) ? $isWin[1] : [];
-
-		if ($aid > 0 && !empty($agentOdds) && !empty($agentOdds['odds2'])) {
-			$odds 				= !empty($agentOdds['odds2']) ? $agentOdds['odds2'] : $agentOdds['odds1'];
-		}else{
-			$odds 				= !empty($lotteryRule['odds2']) ? $lotteryRule['odds2'] : $lotteryRule['odds'];
-		}
-
-		//赔率个数
-		$ocount 				= count(explode(',',$odds));
-    	$odds           		= $ocount>=2 ? getOddsRebates(0,$odds) : getOddsRebate(0,$odds,0);
-
-    	$orderOdds 				= [];
-    	switch ($tag) {
-    		case '115-1-1':
-    			foreach ($winCode as $key => $value) {
-    				$oo 		= isset($odds[$value]) ? $odds[$value] : 0;
-    				$orderOdds[]= $oo;
-    				$money 		+= $oo*$price*1;
-    			}
-    			break;
-    		case '115-2-1':
-    			$ops  = ['大','单','大单','大双','极大','小','双','小单','小双','极小'];
-    			$ops  = array_flip($ops);
-    			foreach ($winCode as $key => $value) {
-    				$oo 		= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-    				$orderOdds[]= $oo;
-    				$money 		+= $oo*$price*1;
-    			}
-    			break;
-    		case '115-3-1':
-    			$ops  = ['红波','绿波','蓝波'];
-    			$ops  = array_flip($ops);
-    			foreach ($winCode as $key => $value) {
-    				$oo 		= isset($ops[$value])?(isset($odds[$ops[$value]])?$odds[$ops[$value]]:0):0;
-    				$orderOdds[]= $oo;
-    				$money 		+= $oo*$price*1;
-    			}
-    			break;
-    		case '115-4-1':
-    			$money 			+= $odds*$price*1;
-    			$orderOdds[]	= $odds;
-    			break;
-    		case '115-5-1':
-    			$money 			+= $odds*$price*1;
-    			$orderOdds[]	= $odds;
-    			break;
-    		default: $money = 0; break;
-    	}
-
-        return [sprintf("%.3f",$money),(!empty($orderOdds) ? implode(',',$orderOdds) : '')];
-	}
-}
 
 if (!function_exists('msubstr'))
 {
@@ -1477,7 +784,8 @@ if (!function_exists('msubstr'))
 	 * @param string $suffix 截断显示字符
 	 * @return string
 	 */
-	function msubstr($str, $start=0, $length, $charset="utf-8", $suffix=true) {
+	function msubstr($str, $start=0, $length, $charset="utf-8", $suffix=true)
+	{
 		if(function_exists("mb_substr"))
 		$slice = mb_substr($str, $start, $length, $charset);
 		elseif(function_exists('iconv_substr')) {
@@ -1494,306 +802,5 @@ if (!function_exists('msubstr'))
 			$slice = join("",array_slice($match[0], $start, $length));
 		}
 		return $suffix ? $slice.'...' : $slice;
-	}
-}
-
-if (!function_exists('pd_loadPk12Cert'))
-{
-	/**
-	 * 获取私钥
-	 * @param $path
-	 * @param $pwd
-	 * @return mixed
-	 * @throws Exception
-	 */
-	function pd_loadPk12Cert($path, $pwd)
-	{
-	    try {
-	        $file = file_get_contents($path);
-	        if (!$file) {
-	            throw new \Exception('loadPk12Cert::file
-						_get_contents');
-	        }
-	        
-	        if (!openssl_pkcs12_read($file, $cert, $pwd)) {
-	            throw new \Exception('loadPk12Cert::openssl_pkcs12_read ERROR');
-	        }
-	        return $cert['pkey'];
-	    } catch (\Exception $e) {
-	        throw $e;
-	    }
-	}
-}
-
-if (!function_exists('pd_sign'))
-{
-	/**
-	 * 私钥签名
-	 * @param $plainText
-	 * @param $path
-	 * @return string
-	 * @throws Exception
-	 */
-	function pd_sign($plainText, $path)
-	{
-	    $plainText = json_encode($plainText);
-	    try {
-	        $resource = openssl_pkey_get_private($path);
-	        $result = openssl_sign($plainText, $sign, $resource);
-	        openssl_free_key($resource);
-
-	        if (!$result) {
-	            throw new \Exception('签名出错' . $plainText);
-	        }
-
-	        return base64_encode($sign);
-	    } catch (\Exception $e) {
-	        throw $e;
-	    }
-	}
-}
-
-if (!function_exists('pd_loadX509Cert'))
-{
-	/**
-	 * 获取公钥
-	 * @param $path
-	 * @return mixed
-	 * @throws Exception
-	 */
-	function pd_loadX509Cert($path)
-	{
-	    try {
-	        $file = file_get_contents($path);
-	        if (!$file) {
-	            throw new \Exception('loadx509Cert::file_get_contents ERROR');
-	        }
-
-	        $cert = chunk_split(base64_encode($file), 64, "\n");
-	        $cert = "-----BEGIN CERTIFICATE-----\n" . $cert . "-----END CERTIFICATE-----\n";
-
-	        $res = openssl_pkey_get_public($cert);
-	        $detail = openssl_pkey_get_details($res);
-	        openssl_free_key($res);
-	        if (!$detail) {
-	            throw new \Exception('loadX509Cert::openssl_pkey_get_details ERROR');
-	        }
-	        return $detail['key'];
-	    } catch (\Exception $e) {
-	        throw $e;
-	    }
-	}
-}
-
-if (!function_exists('pd_verify'))
-{
-	/**
-	 * 公钥验签
-	 * @param $plainText
-	 * @param $sign
-	 * @param $path
-	 * @return int
-	 * @throws Exception
-	 */
-	function pd_verify($plainText, $sign, $path)
-	{
-	    $resource = openssl_pkey_get_public($path);
-	    $result = openssl_verify($plainText, base64_decode($sign), $resource);
-	    openssl_free_key($resource);
-	    if (!$result) {
-	        return false;
-	    }
-
-	    return true;
-	}
-}
-
-if (!function_exists('pd_http_post_json'))
-{
-	/**
-	 * 发送请求
-	 * @param $url
-	 * @param $param
-	 * @return bool|mixed
-	 * @throws Exception
-	 */
-	function pd_http_post_json($url, $param)
-	{
-	    if (empty($url) || empty($param)) {
-	        return false;
-	    }
-	    $param = http_build_query($param);
-	    try {
-
-	        $ch = curl_init();//初始化curl
-	        curl_setopt($ch, CURLOPT_URL, $url);
-	        curl_setopt($ch, CURLOPT_POST, 1);
-	        curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
-	        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
-	        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	        //正式环境时解开注释
-	        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-	        $data = curl_exec($ch);//运行curl
-	        curl_close($ch);
-
-	        if (!$data) {
-	            throw new \Exception('请求出错');
-	        }
-
-	        return $data;
-	    } catch (\Exception $e) {
-	        throw $e;
-	    }
-	}
-}
-
-if (!function_exists('pd_parse_result'))
-{
-	function pd_parse_result($result)
-	{
-	    $arr = array();
-	    $response = urldecode($result);
-	    $arrStr = explode('&', $response);
-	    foreach ($arrStr as $str) {
-	        $p = strpos($str, "=");
-	        $key = substr($str, 0, $p);
-	        $value = substr($str, $p + 1);
-	        $arr[$key] = $value;
-	    }
-
-	    return $arr;
-	}
-}
-
-if (!function_exists('pd_RSAEncryptByPub'))
-{
-	/**
-	 * 公钥加密AESKey
-	 * @param $plainText
-	 * @param $puk
-	 * @return string
-	 * @throws Exception
-	 */
-	function pd_RSAEncryptByPub($plainText, $puk)
-	{
-	    if (!openssl_public_encrypt($plainText, $cipherText, $puk, OPENSSL_PKCS1_PADDING)) {
-	        throw new \Exception('AESKey 加密错误');
-	    }
-
-	    return base64_encode($cipherText);
-	}
-}
-
-if (!function_exists('pd_RSADecryptByPri'))
-{
-	/**
-	 * 私钥解密AESKey
-	 * @param $cipherText
-	 * @param $prk
-	 * @return string
-	 * @throws Exception
-	 */
-	function pd_RSADecryptByPri($cipherText, $prk)
-	{
-	    if (!openssl_private_decrypt(base64_decode($cipherText), $plainText, $prk, OPENSSL_PKCS1_PADDING)) {
-	        throw new \Exception('AESKey 解密错误');
-	    }
-
-	    return (string)$plainText;
-	}
-}
-
-if (!function_exists('pd_AESEncrypt'))
-{
-	/**
-	 * AES加密
-	 * @param $plainText
-	 * @param $key
-	 * @return string
-	 * @throws \Exception
-	 */
-	function pd_AESEncrypt($plainText, $key)
-	{
-	    $plainText = json_encode($plainText);
-	    $result = openssl_encrypt($plainText, 'AES-128-ECB', $key, 1);
-
-	    if (!$result) {
-	        throw new \Exception('报文加密错误');
-	    }
-
-	    return base64_encode($result);
-	}
-}
-
-if (!function_exists('pd_AESDecrypt'))
-{
-	/**
-	 * AES解密
-	 * @param $cipherText
-	 * @param $key
-	 * @return string
-	 * @throws \Exception
-	 */
-	function pd_AESDecrypt($cipherText, $key)
-	{
-	    $result = openssl_decrypt(base64_decode($cipherText), 'AES-128-ECB', $key, 1);
-
-	    if (!$result) {
-	        throw new \Exception('报文解密错误', 2003);
-	    }
-
-	    return $result;
-	}
-}
-
-if (!function_exists('pd_aes_generate'))
-{
-	/**
-	 * 生成AESKey
-	 * @param $size
-	 * @return string
-	 */
-	function pd_aes_generate($size)
-	{
-	    $str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	    $arr = array();
-	    for ($i = 0; $i < $size; $i++) {
-	        $arr[] = $str[mt_rand(0, 61)];
-	    }
-
-	    return implode('', $arr);
-	}
-}
-
-if (!function_exists('get_select_code'))
-{
-	/**
-	 * 生成AESKey
-	 * @param $size
-	 * @return string
-	 */
-	function get_select_code($select_code_id)
-	{
-	    if (file_exists('../selectcode/' . $select_code_id . '.txt')) {
-	    	$con 	= file_get_contents('../selectcode/' . $select_code_id . '.txt');
-	    	return !empty($con) ? json_decode($con,true) : [];
-	    }
-
-	    return [];
-	}
-}
-if (!function_exists('del_select_code'))
-{
-	/**
-	 * 生成AESKey
-	 * @param $size
-	 * @return string
-	 */
-	function del_select_code($select_code_id)
-	{
-	    if (file_exists('../selectcode/' . $select_code_id . '.txt')) {
-	    	unlink('../selectcode/' . $select_code_id . '.txt');
-	    }
 	}
 }

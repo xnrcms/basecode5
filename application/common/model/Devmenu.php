@@ -15,7 +15,7 @@ class Devmenu extends Base
     protected $pk = 'id';
 
     public function formatWhereDefault($model,$parame){
-
+        $model->where('project_id','>',0);
         return $model;
     }
 

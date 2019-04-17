@@ -2,7 +2,7 @@
 /**
  * XNRCMS<562909771@qq.com>
  * ============================================================================
- * 版权所有 2018-2028 杭州新苗科技有限公司，并保留所有权利。
+ * 版权所有 2018-2028 小能人科技有限公司，并保留所有权利。
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和使用 .
  * 不允许对程序代码以任何形式任何目的的再发布。
@@ -95,6 +95,8 @@ class Devmenu extends Base
             $listData   	= $data['lists'];
         }
 
+        cache('DevmenuListData',$listData);
+
         if ($isTree === 1) {
             $Tree          = new \xnrcms\DataTree($listData);
             $listData      = $Tree->toFormatTree();
@@ -123,7 +125,7 @@ class Devmenu extends Base
         $this->assignData($assignData);
 
 		//加载视图模板
-		return view('catlist');
+		return view();
 	}
 
 	/**
@@ -135,7 +137,7 @@ class Devmenu extends Base
 		if (request()->isPost()) $this->update();
 
 		//菜单列表
-		$Tree           				= new \xnrcms\DataTree($this->menu);
+		$Tree           				= new \xnrcms\DataTree(cache('DevmenuListData'));
 		$menus 							= $Tree->toFormatTree();
 
 		//数据详情
@@ -173,7 +175,7 @@ class Devmenu extends Base
         $info                           = $this->getDetail($id);
 		if(empty($info)) $this->error('数据获取失败',Cookie('__forward__'));
 		
-		$Tree           				= new \xnrcms\DataTree($this->menu);
+		$Tree           				= new \xnrcms\DataTree(cache('DevmenuListData'));
 		$menus 							= $Tree->toFormatTree();
 		
 		$pageData						= [];
@@ -223,8 +225,6 @@ class Devmenu extends Base
 	        $data      = $this->getApiData() ;
 
 	        if($res){
-
-	        	cache('SystemAuthMenu' . $this->hashid,null);
 	            $this->success($postData['id']  > 0 ? '更新成功' : '新增成功',Cookie('__forward__')) ;
 	        }else{
 
@@ -262,7 +262,6 @@ class Devmenu extends Base
 
         if($res == true){
 
-        	cache('SystemAuthMenu' . $this->hashid,null);
             $this->success('删除成功',url('index')) ;
         }else{
             
@@ -279,7 +278,6 @@ class Devmenu extends Base
         //接口调用
         if ($this->questBaseEdit($this->apiUrl[request()->action()])){
 
-        	cache('SystemAuthMenu' . $this->hashid,null);
         	$this->success('更新成功',Cookie('__forward__'));
         }
         

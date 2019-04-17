@@ -2,7 +2,7 @@
 /**
  * XNRCMS<562909771@qq.com>
  * ============================================================================
- * 版权所有 2018-2028 杭州新苗科技有限公司，并保留所有权利。
+ * 版权所有 2018-2028 小能人科技有限公司，并保留所有权利。
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和使用 .
  * 不允许对程序代码以任何形式任何目的的再发布。
@@ -425,6 +425,86 @@ class Devapi extends Base
     }
 
     /*api:075bbc49f3869cbb3a569eb9740f637e*/
+
+    /*api:9d8d0a3f638bff38d24ad0477933d071*/
+    /**
+     * * 基础API一键添加
+     * @param  [array] $parame 接口参数
+     * @return [array]         接口输出数据
+     */
+    private function addBaseapi($parame)
+    {
+        //主表数据库模型
+        $dbModel                = model($this->mainTable);
+
+        //自行书写业务逻辑代码
+
+        $api_arr      = ['','listData','saveData','detailData','quickEditData','delData'];
+
+        $api_name     = (isset($parame['api_name']) && !empty($parame['api_name'])) ? explode(',', $parame['api_name']) : [];
+        if (empty($api_name)) return ['Code' => '200007', 'Msg'=>lang('200007')];
+
+        $api_url      = (isset($parame['api_url']) && !empty($parame['api_url'])) ? explode('/', $parame['api_url']) : [];
+        $cname        = count($api_url) === 3 ? ucfirst(lineToHump(humpToLine($api_url[1]))) : '';
+        
+        if (empty($cname) || $cname === 'Xxx' || strtolower($api_url[0]) != 'api' || !in_array($api_url[2], $api_arr))
+        return ['Code' => '200002', 'Msg'=>lang('200005')];
+
+        $api_title    = (isset($parame['api_title']) && !empty($parame['api_title'])) ? $parame['api_title'] : '';
+        $module_id    = (isset($parame['module_id']) && !empty($parame['module_id'])) ? $parame['module_id'] : 0;
+        $project_id   = 1;
+
+        $baseapi      = [
+            'listData'=>['title'=>'数据列表接口'],
+            'saveData'=>['title'=>'数据保存接口'],
+            'detailData'=>['title'=>'数据详情接口'],
+            'quickEditData'=>['title'=>'数据快捷编辑接口'],
+            'delData'=>['title'=>'数据删除接口'],
+        ];
+
+        $addData                   = [];
+        foreach ($api_name as $key => $value)
+        {
+            if (isset($api_arr[$value]) && !empty($api_arr[$value]))
+            {   
+                $aname                      = $api_arr[$value];
+                $mname                      = strtolower($api_url[0]);
+                $apiurl                     = $mname . '/' . $cname . '/' . $aname;
+                $api_type                   = $value;
+
+                $saveData                   = [];
+                $saveData['id']             = 0;
+                $saveData['title']          = $api_title . $baseapi[$aname]['title'];
+                $saveData['user_id']        = $parame['uid'];
+                $saveData['apiurl']         = $apiurl;
+                $saveData['description']    = $api_title . $baseapi[$aname]['title'];
+                $saveData['module_id']      = $module_id;
+                $saveData['author']         = '';
+                $saveData['api_module_type']= 3;
+                $saveData['update_time']    = time();
+                $saveData['urlmd5']         = md5(strtolower($saveData['apiurl'].$project_id));
+                $saveData['create_time']    = time();
+                $saveData['status']         = 1;
+
+                if ($dbModel->apiurlCheck($saveData['urlmd5'],0)){
+                    continue;
+                }else{
+                    $data_id        = $dbModel->saveBaseapi($saveData);
+                    if ($data_id > 0){
+                        $info       = $dbModel->getOneById($data_id);wr($info);
+                        $this->addFixedParame($info,$api_type);
+                    }
+                }
+            }
+        }
+
+        //需要返回的数据体
+        $Data                   = ['TEST'];
+
+        return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>$Data];
+    }
+
+    /*api:9d8d0a3f638bff38d24ad0477933d071*/
 
     /*接口扩展*/
 

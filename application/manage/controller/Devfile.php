@@ -2,7 +2,7 @@
 /**
  * XNRCMS<562909771@qq.com>
  * ============================================================================
- * 版权所有 2018-2028 杭州新苗科技有限公司，并保留所有权利。
+ * 版权所有 2018-2028 小能人科技有限公司，并保留所有权利。
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和使用 .
  * 不允许对程序代码以任何形式任何目的的再发布。
@@ -52,7 +52,7 @@ class Devfile extends Base
         $listNode   = $this->getListNote(request()->controller()) ;
 
 		$allFile        = glob ( \Env::get('APP_PATH') . 'manage/Controller/' . '*' );
-		$hideFile 		= ['Devfile','Devform','Devlist','Devmenu','Base','Devapi','Devproject'];
+		$hideFile 		= ['Devfile','Devform','Devlist','Devmenu','Base','Devapi','Devproject','Devconfig'];
 
         if (!empty($allFile)) {
 
@@ -147,39 +147,21 @@ class Devfile extends Base
 			if (empty($auther)) $this->error('开发者姓名不能为空');
 			if (empty($description)) $this->error('控制器功能描述不能为空');
 
-			$fileName 			= '';
-			$name 				= explode('_', $cname);
-			if (!empty($name)) {
-				foreach ($name as $key => $value) {
-					
-					$fileName  .= ucfirst($value);
-				}
-			}
-
-			if (empty($fileName)) $this->error('控制器名称格式错误');
-
-			$file 				= \Env::get('APP_PATH') . 'manage/controller/'.$fileName . '.php';
+			$fileName 			= ucfirst(lineToHump(humpToLine($cname)));
+			$file 				= \Env::get('APP_PATH') . 'manage/controller/' . $fileName . '.php';
 			$base 				= \Env::get('APP_PATH') . 'manage/tpl/ctpl.php';
 
 			if (file_exists($file)) $this->error('文件已经存在');
 
 			$baseContent	= file_get_contents($base);
-
-			$replace1 		= [
-			'{ControllerAuth}',
-			'{ControllerDate}',
-			'{ControllerDescription}',
-			'{ControllerName}',
-			'{ApiName}'
-			];
+			$replace1 		= ['{ControllerAuth}','{ControllerDate}','{ControllerDescription}','{ControllerName}','{ApiName}'];
 			$replace2 		= [$auther,date('Y-m-d',time()),$description,$fileName,$fileName];
-
 			$fileContent	= str_replace($replace1,$replace2, $baseContent);
 
 			file_put_contents($file,$fileContent);
 
 			//创建视图目录以及文件
-			$viewDir 		= \Env::get('APP_PATH') . 'manage/view/'.strtolower($fileName);
+			$viewDir 		= \Env::get('APP_PATH') . 'manage/view/' . humpToLine($fileName);
 
 			//如果没有此目录就创建此目录  
 			if(!is_dir($viewDir)) mkdir($viewDir);

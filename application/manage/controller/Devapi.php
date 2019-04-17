@@ -2,7 +2,7 @@
 /**
  * XNRCMS<562909771@qq.com>
  * ============================================================================
- * 版权所有 2018-2028 杭州新苗科技有限公司，并保留所有权利。
+ * 版权所有 2018-2028 小能人科技有限公司，并保留所有权利。
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和使用 .
  * 不允许对程序代码以任何形式任何目的的再发布。
@@ -26,6 +26,7 @@ class Devapi extends Base
     {
         parent::__construct();
 
+        $this->tpl                                  = new \xnrcms\DevTpl();
         $this->apiUrl['index']                      = 'admin/Devapi/listData';
         $this->apiUrl['edit']                       = 'admin/Devapi/detailData';
         $this->apiUrl['debug']                      = 'admin/Devapi/detailData';
@@ -34,6 +35,7 @@ class Devapi extends Base
         $this->apiUrl['quickedit']                  = 'admin/Devapi/quickEditData';
         $this->apiUrl['del']                        = 'admin/Devapi/delData';
         $this->apiUrl['apirelease']                 = 'admin/Devapi/apiRelease';
+        $this->apiUrl['addbaseapi']                 = 'admin/Devapi/addBaseapi';
         $this->apiUrl['import']                     = 'admin/DevapiModule/importData';
 
         //接口参数
@@ -1024,6 +1026,86 @@ class Devapi extends Base
         }
 
         return $data;
+    }
+
+    //基础API一键添加
+    public function baseapi($id = 0)
+    {
+        //数据提交
+        if (request()->isPost()) $this->addBaseApi();
+
+        //参数数据接收
+        $param      = request()->param();
+
+        //初始化表单模板 默认当前路由为唯一标识，自己可以自定义标识
+        $tag        = '';
+        $tpl_title  = '基础API一键添加表单'; //初始化列表模板的名称，为空时不初始化
+        $tplid      = $this->tpl->initTplData(get_devtpl_tag($tag),$tpl_title,1);
+        $formNode   = $this->tpl->showTpl($tplid);
+        $formId     = isset($formNode['info']['id']) ? intval($formNode['info']['id']) : 0;
+
+        //数据详情
+        $info                           = $this->getDetail($id);
+        $info['module_id']              = isset($param['module_id']) ? $param['module_id'] : 0;
+
+        //页面头信息设置
+        $pageData['isback']             = 0;
+        $pageData['title1']             = '';
+        $pageData['title2']             = '';
+        $pageData['notice']             = [];
+        
+        //记录当前列表页的cookie
+        cookie('__forward__',$_SERVER['REQUEST_URI']);
+
+        //渲染数据到页面模板上
+        $assignData['formId']           = $formId;
+        $assignData['formFieldList']    = $formNode['list'];
+        $assignData['info']             = $info;
+        $assignData['defaultData']      = $this->getDefaultParameData();
+        $assignData['pageData']         = $pageData;
+        $this->assignData($assignData);
+
+        //加载视图模板
+        return view('addedit');
+    }
+
+    private function addBaseApi()
+    {
+        //表单数据
+        $postData     = request()->param();
+        $tplid        = $this->tpl->checkTpl(intval($postData['formId']),1);
+        if($tplid <= 0) $this->error('表单模板数据不存在');
+
+        $api_title    = (isset($postData['api_title']) && !empty($postData['api_title'])) ? trim($postData['api_title']) : '';
+        if( empty($api_title) ) $this->error('接口名称不能为空');
+
+        $api_url      = (isset($postData['api_url']) && !empty($postData['api_url'])) ? trim($postData['api_url']) : '';
+        if( empty($api_url) ) $this->error('接口地址不能为空');
+
+        $api_name     = (isset($postData['api_name']) && !empty($postData['api_name'])) ? implode(',', $postData['api_name']) : '';
+        if( empty($api_name) ) $this->error('请选择基础接口');
+
+        $module_id    = (isset($postData['module_id']) && !empty($postData['module_id'])) ? (int)$postData['module_id'] : 0;
+        if( $module_id <= 0 ) $this->error('模块ID错误');
+
+        $saveData                   = [];
+        $saveData['uid']            = $this->uid;
+        $saveData['hashid']         = $this->hashid;
+        $saveData['api_title']      = $api_title;
+        $saveData['api_name']       = $api_name;
+        $saveData['api_url']        = $api_url;
+        $saveData['module_id']      = $module_id;
+
+        //接口调用
+        $res       = $this->apiData($saveData,$this->apiUrl['addbaseapi']) ;
+        
+        if($res == true){
+
+            $this->success('新增成功',Cookie('__forward__')) ;
+        }else{
+            
+            $this->error($this->getApiError()) ;
+        }
     }
 
     //导入

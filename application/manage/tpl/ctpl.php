@@ -2,7 +2,7 @@
 /**
  * XNRCMS<562909771@qq.com>
  * ============================================================================
- * 版权所有 2018-2028 杭州新苗科技有限公司，并保留所有权利。
+ * 版权所有 2018-2028 小能人科技有限公司，并保留所有权利。
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和使用 .
  * 不允许对程序代码以任何形式任何目的的再发布。
@@ -25,13 +25,14 @@ class {ControllerName} extends Base
     public function __construct()
     {
         parent::__construct();
+
         $this->tpl                    = new \xnrcms\DevTpl();
-        $this->apiUrl['index']        = 'admin/{ApiName}/listData';
-        $this->apiUrl['edit']         = 'admin/{ApiName}/detailData';
-        $this->apiUrl['add_save']     = 'admin/{ApiName}/saveData';
-        $this->apiUrl['edit_save']    = 'admin/{ApiName}/saveData';
-        $this->apiUrl['quickedit']    = 'admin/{ApiName}/quickEditData';
-        $this->apiUrl['del']          = 'admin/{ApiName}/delData';
+        $this->apiUrl['index']        = 'api/{ApiName}/listData';
+        $this->apiUrl['edit']         = 'api/{ApiName}/detailData';
+        $this->apiUrl['add_save']     = 'api/{ApiName}/saveData';
+        $this->apiUrl['edit_save']    = 'api/{ApiName}/saveData';
+        $this->apiUrl['quickedit']    = 'api/{ApiName}/quickEditData';
+        $this->apiUrl['del']          = 'api/{ApiName}/delData';
     }
 
 	//列表页面
@@ -74,12 +75,12 @@ class {ControllerName} extends Base
         $p 					= '';
         $listData 			= [];
 
-        if ($res){
-
+        if ($res)
+        {
             //分页信息
             $page           = new \xnrcms\Page($data['total'], $data['limit']);
-            if($data['total']>=1){
-
+            if($data['total']>=1)
+            {
                 $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
                 $page->setConfig('header','');
             }
@@ -89,7 +90,8 @@ class {ControllerName} extends Base
             $listData   	= $data['lists'];
         }
 
-        if ($isTree === 1) {
+        if ($isTree === 1)
+        {
             $Tree          = new \xnrcms\DataTree($listData);
             $listData      = $Tree->toFormatTree();
         }
@@ -116,8 +118,8 @@ class {ControllerName} extends Base
         Cookie('__forward__',$_SERVER['REQUEST_URI']);
 
         //异步请求处理
-        if(request()->isAjax()){
-
+        if(request()->isAjax())
+        {
             echo json_encode(['listData'=>$this->fetch('public/list/listData'),'listPage'=>$p]);exit();
         }
 
@@ -136,7 +138,7 @@ class {ControllerName} extends Base
 
         //初始化表单模板 默认当前路由为唯一标识，自己可以自定义标识
         $tag        = request()->module().'/'.request()->controller() . '/addedit';
-        $tpl_title  = '新增/编辑项目表单'; //初始化列表模板的名称，为空时不初始化
+        $tpl_title  = ''; //初始化列表模板的名称，为空时不初始化
         $tplid      = $this->tpl->initTplData(get_devtpl_tag($tag),$tpl_title,1);
         $formNode   = $this->tpl->showTpl($tplid);
         $formId     = isset($formNode['info']['id']) ? intval($formNode['info']['id']) : 0;
@@ -176,7 +178,7 @@ class {ControllerName} extends Base
 
         //初始化表单模板 默认当前路由为唯一标识，自己可以自定义标识
         $tag        = request()->module().'/'.request()->controller() . '/addedit';
-        $tpl_title  = '新增/编辑项目表单'; //初始化列表模板的名称，为空时不初始化
+        $tpl_title  = ''; //初始化列表模板的名称，为空时不初始化
         $tplid      = $this->tpl->initTplData(get_devtpl_tag($tag),$tpl_title,1);
         $formNode   = $this->tpl->showTpl($tplid);
         $formId     = isset($formNode['info']['id']) ? intval($formNode['info']['id']) : 0;
@@ -261,8 +263,10 @@ class {ControllerName} extends Base
 
         //过滤允许提交的数据
         $signData                = [];
-        foreach ($postData as $key => $value) {
-            if (in_array($key,$allowData)) {
+        foreach ($postData as $key => $value)
+        {
+            if (in_array($key,$allowData))
+            {
                 $signData[$key]     = $value;
             }
         }

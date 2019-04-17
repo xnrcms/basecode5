@@ -2,7 +2,7 @@
 /**
  * XNRCMS<562909771@qq.com>
  * ============================================================================
- * 版权所有 2018-2028 杭州新苗科技有限公司，并保留所有权利。
+ * 版权所有 2018-2028 小能人科技有限公司，并保留所有权利。
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和使用 .
  * 不允许对程序代码以任何形式任何目的的再发布。
@@ -23,16 +23,16 @@ class {ModelNameTPL} extends Base
     //默认查询方法，如果特殊需求，则自行改造
     public function formatWhereDefault($model,$parame)
     {
-        if (isset($parame['search']) && !empty($parame['search'])) {
+        if (isset($parame['search']) && !empty($parame['search']))
+        {
+          $search  = json_decode($parame['search'],true);
 
-          $search     = json_decode($parame['search'],true);
-
-          if (!empty($search)) {
-
-            foreach ($search as $key => $value) {
-
-              if (!empty($value) && (is_string($value) || is_numeric($value)) ) {
-
+          if (!empty($search))
+          {
+            foreach ($search as $key => $value)
+            {
+              if (!empty($value) && (is_string($value) || is_numeric($value)) )
+              {
                 $model->where('main.'.$key,'eq',trim($value));
               }
             }
@@ -40,6 +40,61 @@ class {ModelNameTPL} extends Base
         }
 
         return $model;
+    }
+
+    public function getRow($id = 0)
+    {
+      $info       = $this->getOneById($id);
+      $info       = !empty($info) ? $info->toArray() : [];
+
+      //自定义扩展
+      //.......
+
+      return $info;
+    }
+
+    public function getList($parame)
+    {
+      $ckey       = (isset($parame['cacheKey']) && !empty($parame['cacheKey'])) ? json_encode($parame['cacheKey']) : '';
+      $ctag       = 'table_' . $this->name . '_getList';
+      $data       = $this->getCache($ckey);
+
+      //自定义扩展
+      //.......
+      
+      if (empty($data))
+      {
+          $data   = $this->getPageList($parame);
+
+          $this->setCache($ckey,$data,$ctag);
+      }
+
+      return $data;
+    }
+
+    public function saveData($id = 0,$parame = [])
+    {
+        $info      = $id <= 0 ? $this->addData($parame) : $this->updateById($id,$parame);
+        $info      = !empty($info) ? $info->toArray() : [];
+
+        //自定义扩展
+        //.......
+        
+        $this->clearCache(['ctag'=>'table_' . $this->name . '_getList']);
+
+        return $info;
+    }
+
+    public function delData($id = 0)
+    {
+      $delCount     = $this->delData($id);
+
+      //自定义扩展
+      //.......
+      
+      $this->clearCache(['ctag'=>'table_' . $this->name . '_getList']);
+
+      return $delCount;
     }
 
     //自行扩展更多

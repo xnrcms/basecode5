@@ -85,7 +85,7 @@ class Index extends Base
 
         if ($res) {
 
-        	$this->success("清理完成!!!" . url('admin/admin/index'),url('admin/admin/index'));
+        	$this->success("清理完成!!!",url('admin/admin/index'));
         }
         else{
 

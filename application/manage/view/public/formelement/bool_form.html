@@ -6,7 +6,7 @@
 	</dt>
 	<dd class="opt">
 		<div class="onoff">
-			{if condition="$form['default']['type'] eq 'string'"}
+			{if condition="isset($form['default']['type']) && $form['default']['type'] eq 'string'"}
 				{volist name="form.default.parame" id="vo"}
 					{if condition="$i eq 1"}
 						<label for="menu_{$form.tag}{$i}" class="cb-enable {if condition="($info[$form['tag']] eq $key) OR ($info[$form['tag']] eq '')"}selected{/if}">{$vo}</label>
@@ -16,10 +16,11 @@
 						<input id="menu_{$form.tag}{$i}" name="{$form.tag}" value="{$key}" type="radio" {if condition="$info[$form['tag']] eq $key"} checked="checked"{/if}>
 					{/if}
 				{/volist}
-			{else /}
+			{/if}
+			{if condition="isset($form['default']['type']) && $form['default']['type'] eq 'parame'"}
 				{volist name="defaultData[$form['default']['parame']]" id="vo"}
 					{if condition="$i eq 1"}
-						<label for="menu_{$form.tag}{$i}" class="cb-enable {if condition="$info[$form['tag']] eq 1"}selected{/if}">{$vo}</label>
+					<label for="menu_{$form.tag}{$i}" class="cb-enable {if condition="$info[$form['tag']] eq 1"}selected{/if}">{$vo}</label>
 					<input id="menu_{$form.tag}{$i}" name="{$form.tag}" value="{$key}" type="radio" {if condition="$info[$form['tag']] eq 1"} checked="checked"{/if}>
 					{else /}
 					<label for="menu_{$form.tag}{$i}" class="cb-disable {if condition="$info[$form['tag']] eq 1"}selected{/if}">{$vo}</label>

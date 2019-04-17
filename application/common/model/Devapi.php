@@ -64,4 +64,14 @@ class Devapi extends Base
       $list             = $this->where($map)->select();
       return !empty($list) ? $list->toArray() : [];
     }
+
+    public function saveBaseapi($updata = [])
+    {
+      if (!empty($updata))
+      {
+          return $this->insertGetId($updata);
+      }
+
+      return 0;
+    }
 }
