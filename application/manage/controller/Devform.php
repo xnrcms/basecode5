@@ -34,6 +34,7 @@ class Devform extends Base
         $this->apiUrl['edit_save']    = 'admin/Devform/saveData';
         $this->apiUrl['quickedit']    = 'admin/Devform/quickEditData';
         $this->apiUrl['del']          = 'admin/Devform/delData';
+        $this->apiUrl['release']      = 'admin/Devform/releaseData';
     }
 
 	/**
@@ -160,7 +161,7 @@ class Devform extends Base
 
 		//请求地址
         if (!isset($this->apiUrl[request()->action()])||empty($this->apiUrl[request()->action()])) 
-        	$this->error('未设置接口地址');
+        $this->error('未设置接口地址');
 
 		if ( empty($ids) ) $this->error('请选择要操作的数据!');
 
@@ -213,6 +214,38 @@ class Devform extends Base
 		}
 
 		$this->error('非法提交！');
+	}
+
+	public function release()
+	{
+		$ids			= request()->param();
+		$ids 			= (isset($ids['ids']) && !empty($ids['ids'])) ? $ids['ids'] : [];
+
+		//请求地址
+        if (!isset($this->apiUrl[request()->action()])||empty($this->apiUrl[request()->action()])) 
+        $this->error('未设置接口地址');
+
+		if ( empty($ids) ) $this->error('请选择要操作的数据!');
+
+		$ids 				= is_array($ids) ? implode(',',$ids) : intval($ids);
+
+		$parame 			= [];
+		$parame['uid']		= $this->uid;
+        $parame['hashid']	= $this->hashid;
+		$parame['id']		= $ids;
+
+       	//接口调用
+        $res       = $this->apiData($parame,$this->apiUrl[request()->action()]) ;
+        $data      = $this->getApiData() ;
+
+		if($res){
+
+			//数据返回
+			$this->success('发布成功',Cookie('__forward__'));
+		} else {
+
+			$this->error($this->getApiError()) ;
+		}
 	}
 
 	public function changeFieldList(){

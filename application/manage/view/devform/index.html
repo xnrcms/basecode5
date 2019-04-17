@@ -2,19 +2,19 @@
 {block name="main"}
 <div class="page">
   {include file="public/list/notice" /}
-  <div class="flexigrid" style="width: 20%;float: left;" id="formFormList">
+  <div class="flexigrid" style="width:20%;float: left;" id="formFormList">
     <div class="hDiv">
-      <div class="hDivBox">
+      <div class="hDivBox" style="width:105.5%;overflow-x:hidden;overflow-y: auto;">
         <table cellspacing="0" cellpadding="0" width="100%">
           <thead>
             <tr>
-              <th align="left" abbr="article_title" axis="col3" class="" width="70%">
-                <div style="text-align: left;" class="">表单名称(<font color="red">ID</font>)&nbsp;&nbsp;
+              <th align="left" abbr="article_title" axis="col3" class="" width="78%">
+                <div style="text-align: left;" class="">表单名称&nbsp;&nbsp;
                   <i class="fa fa-plus" style="font-size:16px; cursor: pointer;" onClick="return layer_show('表单模板添加','{:url('Devform/add')}',600,550);"></i>
                 </div>
               </th>
-              <th align="left" abbr="ac_id" axis="col4" class="" width="30%">
-                <div style="text-align: center; " class="">状态</div>
+              <th align="left" abbr="ac_id" axis="col4" class="" width="22%">
+                <div style="margin-left: 5px;" class="">状态</div>
               </th>
             </tr>
           </thead>
@@ -23,54 +23,23 @@
     </div>
 
     <div class="bDiv" style="width: 100%;height: 650px;overflow: hidden;">
-      <div id="flexigrid" cellpadding="0" cellspacing="0" border="0" style="width:105.5%;height:100%;overflow-x:hidden;overflow-y: auto;">
-        <table width="100%">
-          <tbody>
-          {foreach name="_list" item="vo" key="k"}
-            <tr id="devform_id_{$vo.id}" data-id ="{$vo.id}" data-pid ="0">
-              <td align="left" class="handle" width="70%">
-                <div>
-                  <span class="btn"><em><i class="fa fa-cog"></i>{$vo.title}(<font color="red">{$vo.id}</font>)<i class="arrow"></i></em>
-                  <ul>
-                    <li><a onClick="layer_show('表单模板编辑','{:url('Devform/edit',array('id'=>$vo['id']))}',600,550);" href="javascript:;">编辑表单</a></li>
-                    <li><a onClick="layer_show('克隆表单','{:url('Devform/cloneForm',array('id'=>$vo['id']))}',1100,550);" href="javascript:;">克隆表单</a></li>
-                    <li><a onClick="delfun(this)" href="javascript:;" data-url="{:url('Devform/del',array('ids'=>$vo['id']))}">删除表单</a></li>
-                  </ul>
-                  </span>
-                </div>
-              </td>
-
-              <td align="center" class="" width="30%">
-                <div data-yes="启用" data-no="禁用">
-                  {if condition='$vo.status eq 1'}
-                    <span class="yes" onClick="CommonJs.quickEdit(this,'{:url('Devform/quickEdit')}','status','{$vo.id}');" ><i class="fa fa-check-circle"></i>启用</span>
-                    {else /}
-                    <span class="no" onClick="CommonJs.quickEdit(this,'{:url('Devform/quickEdit')}','status','{$vo.id}');" ><i class="fa fa-ban"></i>禁用</span>
-                  {/if}
-                </div>
-              </td>
-            </tr>
-          {/foreach}
-          </tbody>
-        </table>
-      </div>
+      {include file="devform/form_list" /}
     </div>
-</div>
+  </div>
 
-<div class="flexigrid" style="width:  20%; float: left;margin-left: 20px;" id="formFieldList">
-
+  <div class="flexigrid" style="width:20%; float: left;margin-left:20px;" id="formFieldList">
     <div class="hDiv">
-      <div class="hDivBox">
+      <div class="hDivBox" style="width:105.5%;overflow-x:hidden;overflow-y: auto;">
         <table cellspacing="0" cellpadding="0" width="100%">
           <thead>
             <tr>
-              <th align="left" abbr="article_title" axis="col3" class="" width="70%">
+              <th align="left" abbr="article_title" axis="col3" class="" width="78%">
                 <div style="text-align: left;" class="" data-id="0" data-pid="{$_fieldInfo.pid}">字段名称&nbsp;&nbsp;
                   <i class="fa fa-plus" style="font-size:16px; cursor: pointer;" onClick="return addFormField(this);"></i>
                 </div>
               </th>
-              <th align="left" abbr="ac_id" axis="col4" class="" width="30%">
-                <div style="text-align: center; " class="">状态</div>
+              <th align="left" abbr="ac_id" axis="col4" class="" width="22%">
+                <div style="margin-left: 5px;" class="">状态</div>
               </th>
             </tr>
           </thead>
@@ -85,23 +54,23 @@
 
 <!-- 字段详情-->
 <div class="flexigrid" style="width: 56%; float: left;margin-left: 20px;" id="formFieldInfo">
+  <div class="hDiv">
+    <div class="hDivBox">
+      <table cellspacing="0" cellpadding="0" width="100%">
+        <thead>
+          <tr>
+            <th align="left" abbr="article_title" axis="col3" class="" width="100%">
+              <div style="text-align: left;" class="">字段详情</div>
+            </th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
 
-    <div class="hDiv">
-      <div class="hDivBox">
-        <table cellspacing="0" cellpadding="0" width="100%">
-          <thead>
-            <tr>
-              <th align="left" abbr="article_title" axis="col3" class="" width="100%">
-                <div style="text-align: left;" class="">字段详情</div>
-              </th>
-            </tr>
-          </thead>
-        </table>
-      </div>
-    </div>
-    <div style="padding: 0px;width: 100%;height: 650px;overflow: hidden;">
-      <div class="page" style="padding: 0px;width:105.5%;height:100%;overflow-x:hidden;overflow-y: auto;"></div>
-    </div>
+  <div style="padding: 0px;width: 100%;height: 650px;overflow: hidden;">
+    <div class="page" style="padding:0px;width:105.5%;height:100%;overflow-x:hidden;overflow-y: auto;"></div>
+  </div>
 </div>
 
 <script>
@@ -132,9 +101,9 @@ function changeColoeLine(){
   });
   
 }
-function delfun(obj) {
+function delfun(obj,msg) {
   // 删除按钮
-  layer.confirm('确认删除？', { btn: ['确定', '取消']}, function () {
+  layer.confirm(msg, { btn: ['确定', '取消']}, function () {
     $.ajax({
       type: 'post',
       url: $(obj).attr('data-url'),
@@ -157,16 +126,18 @@ function delfun(obj) {
 function setLists(data,typeid){
 
   if (data.ac == 1) {
+      //编辑
       var obj       = $("#devform_id_"+data.id);
       var showId    = data.pid == 0 ?  '(<font color="red">'+data.id+'</font>)&nbsp;&nbsp;' : '';
       obj.find('td').eq(0).find('span>em').html('<i class="fa fa-cog"></i>'+data.title+showId+'<i class="arrow"></i>');
       //编辑
+      var index     = 1;
       if (data.status == 1) {
-          obj.find('td').eq(1).find('span').removeClass('no').addClass('yes');
-          obj.find('td').eq(1).find('span').html("<i class='fa fa-check-circle'></i>启用");
+          obj.find('td').eq(index).find('span').removeClass('no').addClass('yes');
+          obj.find('td').eq(index).find('span').html("<i class='fa fa-check-circle'></i>启用");
       }else if (data.status == 2){
-          obj.find('td').eq(1).find('span').removeClass('yes').addClass('no');
-          obj.find('td').eq(1).find('span').html("<i class='fa fa-ban'></i>禁用");
+          obj.find('td').eq(index).find('span').removeClass('yes').addClass('no');
+          obj.find('td').eq(index).find('span').html("<i class='fa fa-ban'></i>禁用");
       }
   }else{
     //新增

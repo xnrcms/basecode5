@@ -91,5 +91,20 @@ class Devform extends Base
 
     /*api:53dd2a2a45300aa718938e0f2b895fdd*/
 
+    /*api:9a75399e1b0d44e644387af123875a99*/
+    /**
+     * 表单模板发布接口
+     * @access public
+     * @param  [array] $parame 扩展参数
+     * @return [json]          接口数据输出
+    */
+    public function releaseData($parame = []){
+
+        //执行接口调用
+        return $this->execApi($parame);
+    }
+
+    /*api:9a75399e1b0d44e644387af123875a99*/
+
     /*接口扩展*/
 }

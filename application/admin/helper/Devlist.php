@@ -407,5 +407,26 @@ class Devlist extends Base
 
     /*api:e2261b8f76e5c7c628d25cdccf3890ac*/
 
+    /*api:f7cbd4d84eec5b63f3edb55034775e00*/
+    /**
+     * * 列表模板发布接口
+     * @param  [array] $parame 接口参数
+     * @return [array]         接口输出数据
+     */
+    private function releaseData($parame)
+    {
+        //主表数据库模型
+        $dbModel                = model($this->mainTable);
+
+        //自行书写业务逻辑代码
+
+        //需要返回的数据体
+        $Data                   = ['TEST'];
+
+        return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>$Data];
+    }
+
+    /*api:f7cbd4d84eec5b63f3edb55034775e00*/
+
     /*接口扩展*/
 }

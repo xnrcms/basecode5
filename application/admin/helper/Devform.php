@@ -409,5 +409,26 @@ class Devform extends Base
 
     /*api:53dd2a2a45300aa718938e0f2b895fdd*/
 
+    /*api:9a75399e1b0d44e644387af123875a99*/
+    /**
+     * * 表单模板发布接口
+     * @param  [array] $parame 接口参数
+     * @return [array]         接口输出数据
+     */
+    private function releaseData($parame)
+    {
+        //主表数据库模型
+        $dbModel                = model($this->mainTable);
+
+        //自行书写业务逻辑代码
+        wr($parame);
+        //需要返回的数据体
+        $Data                   = ['TEST'];
+
+        return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>$Data];
+    }
+
+    /*api:9a75399e1b0d44e644387af123875a99*/
+
     /*接口扩展*/
 }
