@@ -85,7 +85,7 @@ class {ModelNameTPL} extends Base
         return $info;
     }
 
-    public function delData($id = 0)
+    public function deleteData($id = 0)
     {
       $delCount     = $this->delData($id);
 

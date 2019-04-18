@@ -110,12 +110,13 @@ class {HelperNameTPL} extends Base
 		//数据格式化
 		$data 						= (isset($lists['lists']) && !empty($lists['lists'])) ? $lists['lists'] : [];
 
-    	if (!empty($data)) {
-
+    	if (!empty($data))
+        {
             //自行定义格式化数据输出
-    		//foreach($data as $k=>$v){
+    		/*foreach($data as $k=>$v)
+            {
 
-    		//}
+    		}*/
     	}
 
     	$lists['lists'] 			= $data;
@@ -214,7 +215,7 @@ class {HelperNameTPL} extends Base
         //...
         
         //执行删除操作
-    	$delCount				= $dbModel->delData($id);
+    	$delCount				= $dbModel->deleteData($id);
 
     	return ['Code' => '000000', 'Msg'=>lang('000000'),'Data'=>['count'=>$delCount]];
     }

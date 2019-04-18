@@ -33,6 +33,7 @@ class DevTpl
     $this->model    = $this->tplType == 0 ? model('devlist') : model('devform');
     $this->tt       = time();
     $this->tplid    = 0;
+    $this->pk       = 'id';
   }
 
   //配置定制
@@ -357,6 +358,39 @@ class DevTpl
       $this->tplid    = $this->model->id;
       return 2;
     }
+  }
+
+  //获取模板允许提交的数据
+  public function getFormTplData($tplid = 0,$postData = [])
+  {
+      if (empty($tplid) || empty($postData))  return [];
+
+      $formNode   = $this->showTpl($tplid,'-2');
+      $field      = [];
+      $signData   = [];
+
+      //定义允许提交的字段
+      if (!empty($formNode) && isset($formNode['list']) && !empty($formNode['list']))
+      {
+          foreach ($formNode['list'] as $arr)
+          {
+              $field[]    = $arr['tag'];
+          }
+      }
+      
+      //过滤允许提交的数据
+      if (!empty($field))
+      {
+          foreach ($postData as $key => $value)
+          {
+              if (in_array($key,$field))
+              {
+                  $signData[$key]     = $value;
+              }
+          }
+      }
+
+      return $signData;
   }
 
   //校验调用标识是否存在

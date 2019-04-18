@@ -142,6 +142,7 @@ class {ControllerName} extends Base
         $tplid      = $this->tpl->initTplData(get_devtpl_tag($tag),$tpl_title,1);
         $formNode   = $this->tpl->showTpl($tplid);
         $formId     = isset($formNode['info']['id']) ? intval($formNode['info']['id']) : 0;
+        $formList   = isset($formNode['list']) ? $formNode['list'] : [];
 
         //数据详情
         $info                           = $this->getDetail(0);
@@ -157,7 +158,7 @@ class {ControllerName} extends Base
 
         //渲染数据到页面模板上
         $assignData['formId']           = $formId;
-        $assignData['formFieldList']    = $formNode['list'];
+        $assignData['formFieldList']    = $formList;
         $assignData['info']             = $info;
         $assignData['defaultData']      = $this->getDefaultParameData();
         $assignData['pageData']         = $pageData;
@@ -182,6 +183,7 @@ class {ControllerName} extends Base
         $tplid      = $this->tpl->initTplData(get_devtpl_tag($tag),$tpl_title,1);
         $formNode   = $this->tpl->showTpl($tplid);
         $formId     = isset($formNode['info']['id']) ? intval($formNode['info']['id']) : 0;
+        $formList   = isset($formNode['list']) ? $formNode['list'] : [];
 
         //数据详情
         $info                           = $this->getDetail($id);
@@ -197,7 +199,7 @@ class {ControllerName} extends Base
 
         //渲染数据到页面模板上
         $assignData['formId']           = $formId;
-        $assignData['formFieldList']    = $formNode['list'];
+        $assignData['formFieldList']    = $formList;
         $assignData['info']             = $info;
         $assignData['defaultData']      = $this->getDefaultParameData();
         $assignData['pageData']         = $pageData;
@@ -254,24 +256,14 @@ class {ControllerName} extends Base
     private function update()
     {
         //表单数据
-        $postData                = request()->param();
-        $tplid                   = $this->tpl->checkTpl(intval($postData['formId']),1);
+        $postData                   = request()->param();
+
+        //表单模板
+        $tplid                      = $this->tpl->checkTpl(intval($postData['formId']),1);
         if($tplid <= 0) $this->error('表单模板数据不存在');
 
-        //定义允许提交的字段
-        $allowData               = [];
-
-        //过滤允许提交的数据
-        $signData                = [];
-        foreach ($postData as $key => $value)
-        {
-            if (in_array($key,$allowData))
-            {
-                $signData[$key]     = $value;
-            }
-        }
-
-        //用户信息
+        //接口数据
+        $signData                   = $this->tpl->getFormTplData($tplid,$postData);
         $signData['uid']            = $this->uid;
         $signData['hashid']         = $this->hashid;
         
